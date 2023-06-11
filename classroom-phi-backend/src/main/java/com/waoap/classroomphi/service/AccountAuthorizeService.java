@@ -13,11 +13,13 @@ import org.springframework.stereotype.Service;
  * 用户账号授权服务类
  *
  * @author Waoap
- * @since 0.0.1
  */
 @Service
 public class AccountAuthorizeService implements UserDetailsService {
 
+  /**
+   * 账号 Mapper 接口，使用注解实现自动装配
+   */
   @Resource
   private AccountMapper accountMapper;
 

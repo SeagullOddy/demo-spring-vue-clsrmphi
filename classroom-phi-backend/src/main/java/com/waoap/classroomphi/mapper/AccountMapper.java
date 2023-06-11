@@ -13,10 +13,10 @@ import org.apache.ibatis.annotations.Param;
  *
  * <h2>备注</h2>
  *
- * 在进行 MyBatis 开发时，可以使用注解来配置 MyBatis 中的对象关系映射，需要给接口添加 {@link Mapper} 注解，告知 MyBatis 这是一个 Mapper
- * 接口。而后在接口中添加所需的方法，并且给方法添加所需的 {@link Select} 等注解来配置执行的 SQL 语句、{@link Results}
- * 等注解来配置映射关系、{@link ConstructorArgs} 等注解来配置映射时使用的构造方法的参数列表。假设下文中出现的 Test 类都是只有 id、name、age
- * 三个属性，且分别为 Integer、String、String 类型，例如：
+ * 在使用 MyBatis 框架时，可以使用注解来配置 MyBatis 中的对象关系映射，需要给接口添加 {@link Mapper} 注解，告知 MyBatis 这是一个 Mapper 接口（一个
+ * Mapper 接口相当于一个 mapper.xml）。而后在接口中添加所需的方法，并且给方法添加所需的 {@link Select} 等注解来配置该方法对应的 SQL
+ * 语句、{@link Results} 等注解来配置映射关系、{@link ConstructorArgs} 等注解来配置映射时使用的构造方法的参数列表。假设下文中出现的 Test 类都是只有
+ * id、name、age 三个属性，且分别为 Integer、String、String 类型，下文的代码给出了一个 Mapper 接口的示例：
  *
  * <pre>
  * &#64;Mapper
@@ -29,7 +29,6 @@ import org.apache.ibatis.annotations.Param;
  *     &#64;Result(column = "age", property = "age"),
  *   })
  *   Test findTestById(Integer id);
- *
  * }
  * </pre>
  *
