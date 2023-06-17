@@ -1,6 +1,6 @@
 package com.waoap.classroomphi.mapper;
 
-import com.waoap.classroomphi.entity.Account;
+import com.waoap.classroomphi.entity.account.Account;
 import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.ConstructorArgs;
 import org.apache.ibatis.annotations.Mapper;
@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Param;
 
 /**
- * 账号的 Mapper 接口。
+ * 账户的 Mapper 接口。
  *
  * <h2>备注</h2>
  *
@@ -76,11 +76,11 @@ import org.apache.ibatis.annotations.Param;
 public interface AccountMapper {
 
   /**
-   * 根据姓名或邮箱查询账号
+   * 根据账户关键字查询账户。
    *
-   * @param usernameOrEmail 姓名或邮箱
-   * @return 账号
+   * @param accountKey 账户关键字，包括账号、邮箱、手机号
+   * @return 账户
    */
-  @Select("SELECT * FROM account WHERE username = #{usernameOrEmail} OR email = #{usernameOrEmail}")
-  Account findAccountByUsernameOrEmail(String usernameOrEmail);
+  @Select("SELECT * FROM account WHERE email = #{accountKey} OR telephone = #{accountKey} OR no = #{accountKey}")
+  Account findAccountByAccountKey(String accountKey);
 }

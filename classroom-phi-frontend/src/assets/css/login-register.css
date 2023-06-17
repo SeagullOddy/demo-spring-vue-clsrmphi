@@ -1,0 +1,346 @@
+.view-login {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column
+}
+
+.view-login .logo-box-secdomain {
+  height: 76px;
+  width: 100%;
+  position: fixed;
+  vertical-align: middle;
+  z-index: 1000;
+  top: 0
+}
+
+.view-login .logo-box-secdomain img {
+  display: block;
+  width: 136px;
+  max-height: 34px
+}
+
+.view-login .logo-box {
+  position: absolute;
+  top: 48px;
+  left: 62px;
+  cursor: pointer
+}
+
+.view-login .logo-box img {
+  display: block;
+  max-width: 136px;
+  max-height: 34px
+}
+
+.view-login .login-content {
+  display: flex;
+  justify-content: space-between
+}
+
+.view-login .login-content .left {
+  margin-right: -100px
+}
+
+.view-login .login-content .left img {
+  display: block;
+  height: 538px
+}
+
+.view-login .login-content .right .right-content {
+  width: 431px;
+  padding: 0 35px;
+  background: #fff;
+  border: 1px solid #eee;
+  box-shadow: 0 0 61px 0 rgba(85, 108, 144, .07)
+}
+
+.view-login .login-content .right .title {
+  position: relative;
+  padding: 18px 0;
+  text-align: center
+}
+
+.view-login .login-content .right .title span {
+  font-size: 22px;
+  font-weight: 700
+}
+
+.view-login .login-content .right .title img {
+  position: absolute;
+  right: -11px;
+  top: 22px;
+  width: 24px;
+  height: 24px
+}
+
+.view-login .login-content .right .tabs-nav {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between
+}
+
+.view-login .login-content .right .tabs-nav .item {
+  cursor: pointer;
+  position: relative;
+  padding-bottom: 9px;
+  font-size: 18px;
+  font-family: PingFangSC, PingFangSC-Regular;
+  font-weight: 400;
+  text-align: left;
+  color: #74787c;
+  line-height: 32px
+}
+
+.view-login .login-content .right .tabs-nav .active {
+  font-size: 20px;
+  color: #1f2023;
+  font-weight: 700
+}
+
+.view-login .login-content .right .tabs-nav .active:after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  height: 2px;
+  width: 60px;
+  background: #4285f4
+}
+
+.view-login .login-content .right .weixin-tab .qr-big {
+  display: block;
+  margin: 0 auto;
+  width: 300px;
+  height: 300px;
+  border-radius: 5px
+}
+
+.view-login .login-content .right .qr-box {
+  overflow: hidden;
+  margin: 0 -35px 0
+}
+
+.view-login .login-content .right .qr-box .qr-code {
+  position: relative;
+  height: 70px;
+  width: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: url(@/assets/img/qr-all.png) no-repeat 0 0/cover;
+  transform: rotateY(180deg)
+}
+
+.view-login .login-content .right .qr-box .qr-code:after {
+  content: "";
+  display: block;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 150%;
+  height: 150%;
+  background: #fff;
+  transform-origin: 100% 100%;
+  transform: rotate(-45deg) translate(45%, -45%)
+}
+
+.view-login .login-content .right .qr-box .qr-code.pc {
+  background-position: 0 -140px
+}
+
+.view-login .login-footer-img {
+  position: absolute;
+  bottom: 100px
+}
+
+.view-login .role-box {
+  display: flex;
+  justify-content: space-between
+}
+
+.view-login .role-box .item {
+  width: 172px;
+  padding: 8px 16px;
+  border: 1px solid #fff
+}
+
+.view-login .role-box .item .icon {
+  margin-right: 9px;
+  display: block;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%
+}
+
+.view-login .role-box .item .name {
+  font-size: 14px;
+  font-family: MicrosoftYaHei;
+  text-align: center;
+  color: #3c4043;
+  line-height: 24px;
+  letter-spacing: 1px
+}
+
+.view-login .role-box .active {
+  border: 1px solid #4285f4
+}
+
+.view-login .el-button, .view-login .el-input__inner {
+  height: 46px;
+  padding-top: 4px;
+  padding-bottom: 4px
+}
+
+.regist-autocomplete .cus-item em {
+  font-style: normal;
+  color: #4285f4
+}
+
+.regist-pwd-tip {
+  padding: 5px
+}
+
+.regist-pwd-tip .level-box {
+  padding-bottom: 8px
+}
+
+.regist-pwd-tip .level-box p {
+  width: 40px;
+  height: 18px;
+  background: #f8f9fa;
+  border: 1px solid #e8eaed;
+  opacity: .4;
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+  color: #3c4043
+}
+
+.regist-pwd-tip .level-box p span {
+  transform: scale(.83)
+}
+
+.regist-pwd-tip .level1 {
+  border-radius: 100px 0 0 100px
+}
+
+.regist-pwd-tip .level1.active {
+  opacity: 1;
+  color: #fff;
+  background: #eb5050
+}
+
+.regist-pwd-tip .level2 {
+  margin-left: 4px
+}
+
+.regist-pwd-tip .level2.active {
+  opacity: 1;
+  color: #fff;
+  background: #ff941f
+}
+
+.regist-pwd-tip .level3 {
+  margin-left: 4px;
+  border-radius: 0 100px 100px 0
+}
+
+.regist-pwd-tip .level3.active {
+  opacity: 1;
+  color: #fff;
+  background: #00ca90
+}
+
+.regist-pwd-tip .text-item {
+  margin-top: 8px;
+  font-size: 12px;
+  font-family: MicrosoftYaHei;
+  text-align: left;
+  color: #5f6368;
+  line-height: 20px
+}
+
+.regist-pwd-tip .text-item .el-icon-success {
+  color: #00ca90
+}
+
+.regist-pwd-tip .text-item .el-icon-error {
+  color: #eb5050
+}
+
+[class*=driver-close-btn] {
+  background: transparent;
+  color: #969696;
+  border: none
+}
+
+div#driver-popover-item .driver-popover-footer button {
+  background-color: #1890ff;
+  color: #fff;
+  text-shadow: none;
+  border: none;
+  line-height: 1.8;
+  border-radius: 4px
+}
+
+div#driver-popover-item .driver-popover-footer button:hover {
+  background-color: #50abff
+}
+
+div#driver-popover-item .driver-popover-footer button:active {
+  background-color: #1269ba
+}
+
+div#driver-popover-item .driver-popover-footer .driver-close-btn {
+  background: transparent;
+  color: #969696;
+  border: none
+}
+
+div#driver-popover-item .driver-popover-footer .driver-close-btn:hover {
+  background-color: transparent
+}
+
+.view-login .margin-top {
+  margin-top: 12px
+}
+
+.view-login .margin-left {
+  margin-left: 12px
+}
+
+.view-login .margin-right {
+  margin-right: 12px
+}
+
+.view-login .padding-bottom {
+  padding-bottom: 12px
+}
+
+.view-login .padding-top {
+  padding-top: 12px
+}
+
+.view-login .padding-left {
+  padding-left: 12px
+}
+
+.view-login .padding-right {
+  padding-right: 12px
+}
+
+.margin-bottom {
+  margin-bottom: 16px
+}
+
+.el-form-item--large .el-form-item__content {
+  line-height: 36px;
+}

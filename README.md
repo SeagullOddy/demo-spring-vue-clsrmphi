@@ -5,10 +5,29 @@
 ### 前端
 
 - 基于 Vue.js 的前端框架：[Vue.js](https://cn.vuejs.org/)
+- vue-router：[vue-router](https://router.vuejs.org/zh/)
+- axios：[axios](https://axios-http.com/)
+- element-plus：[element-plus](https://element-plus.gitee.io/#/zh-CN/component/installation)
+- pinia：[pinia](https://pinia.esm.dev/)
+- vite：[vite](https://cn.vitejs.cn/)
 
 ### 后端
 
 - 基于 Spring Boot 的后端框架：[Spring Boot](https://spring.io/projects/spring-boot)
+
+  特性：
+
+    - Spring Boot 应用于 **整合 Spring 系列框架和一些第三方框架**，比如 Spring、Spring Security 和
+      MyBatis 等，可以在 `application.properties` 或 `application.yaml` 中进行集中配置，并且只需要修改很少的配置项
+    - **直接嵌入 Web 服务器** ，比如 Tomcat、Jetty 和 Undertow 等，不需要部署 WAR 包
+    - **提供可选的 starter（场景启动器）**，为每种场景整合一种依赖，可以简化应用整合
+    - **按需自动配置 Spring 和第三方库**
+      ，如果这些场景我们需要使用（生效），这个场景的依赖就会被自动配置好，每个场景都有很多默认配置（约定大于配置），当然我们也可以自定义配置，在配置文件中修改即可
+    - 提供生产就绪型功能，比如指标、健康检查和外部化配置等
+    - **不生成额外的代码**，不需要担心生成的代码出问题，且 **不需要 XML 配置**
+
+  总结： **简化开发、配置、整合、部署、监控、运维**。
+
 - 基于 Spring Security 的权限管理：[Spring Security](https://spring.io/projects/spring-security)
 - 基于 MyBatis 的持久层框架：[MyBatis](https://mybatis.org/mybatis-3/zh/index.html)
 - 基于 MySQL 的数据库：[MySQL](https://www.mysql.com/cn/)
