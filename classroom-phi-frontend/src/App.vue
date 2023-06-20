@@ -1,5 +1,21 @@
 <script setup>
+import {get} from "@/net";
+import {useAuthStore} from "@/stores";
+import router from "@/router";
 
+// 程序启动时，获取一次当前登录用户信息
+const authStore = useAuthStore()
+if (authStore.getAccount() === null) {
+  get('/api/account/me', {
+    onSuccess: (data) => {
+      authStore.setAccount(data)
+      router.push('/main')
+    },
+    onFailure: () => {
+      authStore.setAccount(null)
+    }
+  })
+}
 </script>
 
 <template>

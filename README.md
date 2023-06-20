@@ -5,11 +5,12 @@
 ### 前端
 
 - 基于 Vue.js 的前端框架：[Vue.js](https://cn.vuejs.org/)
+- vite：[vite](https://cn.vitejs.cn/)
 - vue-router：[vue-router](https://router.vuejs.org/zh/)
 - axios：[axios](https://axios-http.com/)
 - element-plus：[element-plus](https://element-plus.gitee.io/#/zh-CN/component/installation)
-- pinia：[pinia](https://pinia.esm.dev/)
-- vite：[vite](https://cn.vitejs.cn/)
+
+[//]: # (- pinia：[pinia]&#40;https://pinia.esm.dev/&#41;)
 
 ### 后端
 
@@ -36,8 +37,18 @@
 
 ### 基础功能
 
-- [] 让用户选择身份（教师、学生）
-- [] 用户注册（手机号注册、邮箱注册）或登录（账号登录、手机短信登录、微信登录），进入课堂主页
+- [x] 用户使用手机号或邮箱注册，注册时需要填写验证码防止恶意注册：
+
+  注册码接口使用的是课堂派的接口。具体方法为向 getFigureCode 接口发送请求，接口会返回一个验证码的 url
+  和 sessionid，使用 url 获取验证码图片后，可以向 verify 接口发送携带 sessionid
+  和验证码等必要数据的请求，检验验证码是否正确，如果正确，verify 接口会返回一个 status 为 1
+  的 json 数据，前端可以根据这个数据判断验证码是否正确，执行下一步操作。
+
+- [x] 让用户选择身份（老师、学生）：
+
+  使用 vue 给老师、学生选项绑定一个方法，在方法中修改表单的值
+
+- [x] 用户登录（邮箱、手机号或账号配合密码登录），进入课堂主页
 - [] 学生输入课程号，选修课程
 - [] 教师布置作业
 - [] 学生提交作业
@@ -45,9 +56,9 @@
 
 #### 教师端详细介绍
 
-- [] **账号注册：**
+- [x] **账号注册：**
     - 账号注册时需要让用户选择身份为教师
-- [] **登录：**
+- [x] **登录：**
     - 登录时选择一种登录方式
 - [] **课堂主页中**
     - 列出教师自己的所有课程（包括创建的和加入的）
@@ -65,9 +76,9 @@
 
 #### 学生端详细介绍
 
-- [] **账号注册：**
+- [x] **账号注册：**
     - 账号注册时需要让用户选择身份为学生
-- [] **登录：**
+- [x] **登录：**
     - 登录时选择一种登录方式
 - [] **课堂主页：**
     - 列出学生自己的所有课程
@@ -124,7 +135,7 @@
 - **后端：制定接口返回值的格式规范：** 设计 RestBean 类，封装接口的返回值，方便构造为 JSON
   字符串格式，让前端可以很方便地解析
 - **数据库：设计账号表，用于用户验证登录：**
-  表 account，属性有：id、username、email、telephone、password、role、school，其中数据库中存储的密码是原始密码经过
+  表 authorizeAccount，属性有：id、username、email、telephone、password、accountRole、school，其中数据库中存储的密码是原始密码经过
   md5 加密后的结果，从而保证安全性，即使数据库被攻击也不会泄露用户的原始密码
 - **后端：实现用户验证登录接口：** 使用 MyBatis
   框架，设计 Account 实体类、AccountMapper 接口、AccountAuthorizeService 服务类，实现用户登录的业务逻辑，最后使用

@@ -1,8 +1,14 @@
 <script setup>
 import {reactive, ref} from "vue";
 import {ElMessage} from "element-plus";
-import {post} from "@/net";
+import {get, post} from "@/net";
 import router from "@/router";
+import {useAuthStore} from "@/stores";
+
+// 适配 html 缩放
+const viewLoginStyle = ref({
+  minHeight: "calc(100vh / " + zoomRate + ")"
+})
 
 // 登陆表单的引用
 const loginFormRef = ref(null)
@@ -37,18 +43,24 @@ const login = async (formEL) => {
       username: loginFormData.username,
       password: loginFormData.password,
       remember: loginFormData.remember
-    }, (result) => {
-      ElMessage.success(result)
-      router.push('/#/main')
-    }, (result) => {
-      ElMessage.error(result)
+    }, {
+      onSuccess: (data) => {
+        ElMessage.success(data.result)
+        // 登陆成功之后，获取用户信息存入 store
+        get('/api/account/me', {
+          onSuccess: (data) => {
+            useAuthStore().setAccount(data.result)
+          }
+        })
+        router.push('/main')
+      }
     })
   })
 }
 </script>
 
 <template>
-  <div class="view-login" style="min-height: calc(76.9231vh);">
+  <div class="view-login" :style="viewLoginStyle">
     <div class="logo-box">
       <img src="/images/common/logo_blue.png" alt="">
     </div>

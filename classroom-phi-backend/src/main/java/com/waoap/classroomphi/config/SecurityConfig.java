@@ -1,7 +1,7 @@
 package com.waoap.classroomphi.config;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.waoap.classroomphi.entity.rest.RestBean;
+import com.waoap.classroomphi.entity.RestBean;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.annotation.Resource;
@@ -134,7 +134,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration {
+public class SecurityConfig {
 
   /**
    * 配置密码加密器，会在验证时被自动装配自动使用。
@@ -173,8 +173,12 @@ public class SecurityConfiguration {
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
       PersistentTokenRepository persistentTokenRepository) throws Exception {
     httpSecurity
-        // 所有请求都需要授权
-        .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
+        // 指定授权配置
+        .authorizeHttpRequests(
+            authorizeRequests -> authorizeRequests.requestMatchers("/api/auth/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated())
         // 指定登录配置
         .formLogin(formLogin -> formLogin.loginProcessingUrl("/api/auth/login")
             .successHandler(this::onLoginSuccess)
@@ -186,17 +190,17 @@ public class SecurityConfiguration {
         .rememberMe(rememberMe -> rememberMe.rememberMeParameter("remember")
             .tokenValiditySeconds(60 * 60 * 24 * 7)
             .tokenRepository(persistentTokenRepository))
-        // 方便本地测试，关闭 csrf
+        // 前后端分离，由于前端后端总是分处于两台服务器上，之间的请求可能需要跨域，应关闭 csrf
         .csrf(AbstractHttpConfigurer::disable)
-        // 开启跨域
+        // 允许跨域请求
         .cors(cors -> cors.configurationSource(request -> {
           CorsConfiguration corsConfiguration = new CorsConfiguration();
-          // 这样的做法很不安全，生产环境中应该指定允许的域名
-          corsConfiguration.addAllowedOriginPattern("*"); // 允许所有域名
+          // 允许跨域的域名，最好指定请求头和请求方法
+          corsConfiguration.addAllowedOriginPattern("http://localhost:5173");
           corsConfiguration.setAllowCredentials(true); // 允许携带 cookie
           corsConfiguration.addAllowedHeader("*"); // 允许所有请求头
           corsConfiguration.addAllowedMethod("*"); // 允许所有请求方法
-          // 允许跨域的路径是所有路径
+          // 为了方便，所有路径都使用该配置
           UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
           source.registerCorsConfiguration("/**", corsConfiguration);
           return corsConfiguration;

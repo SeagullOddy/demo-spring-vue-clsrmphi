@@ -1,4 +1,4 @@
-package com.waoap.classroomphi.entity.rest;
+package com.waoap.classroomphi.entity;
 
 import lombok.Data;
 

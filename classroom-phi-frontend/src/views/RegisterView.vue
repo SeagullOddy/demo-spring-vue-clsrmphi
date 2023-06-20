@@ -2,49 +2,60 @@
 import {reactive, ref} from 'vue'
 import {ElMessage} from "element-plus";
 import router from "@/router";
-import {post} from "@/net";
+import {post, postOthers} from "@/net";
 
-const registerFormRef = ref()
-const teacherRoleRef = ref()
-const studentRoleRef = ref()
+// HTML 元素的引用
+const registerFormRef = ref(null)
+const teacherRoleRef = ref(null)
+const studentRoleRef = ref(null)
+const figureCodeImgRef = ref(null)
+
+// 是否选择学生身份，用于控制学号输入框的显示
 const chooseStudent = ref(false)
 
+// 虚拟的十二位手机号，用于课堂派的接口
+const virtualTelephone = ref('000000000000')
+
+// 注册表单的数据
 const registerFormData = reactive({
-  emailOrTelephone: '',
+  emailOrTelephone: '', // 邮箱/手机号
   password: '',
   password2: '',
-  role: 'TEACHER',
+  accountRole: 'TEACHER', // 默认为老师，注册页面打开时默认选则的是老师身份
   name: '',
   school: '',
-  studentNo: '',
-  verify: ''
+  studentNo: null, // 默认为 null，此时在后端不会收到该字段
+  verify: '' // 验证码
 })
 
-const telephoneRegExp = /^1[3456789]\d{9}$/
-const emailRegExp = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/
+// 注册表单验证器和验证规则
+// 邮箱、电话正则表达式来源于：https://c.runoob.com/front-end/854/
+const emailRegExp = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
+const telephoneRegExp = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/
 const emailOrTelephoneValidator = (rule, value, callback) => {
   if (value === '') {
     callback(new Error('请输入邮箱/手机号'))
+  } else if (value.length > 30) {
+    callback(new Error('邮箱/手机号长度不能超过30位'))
   } else if (!emailRegExp.test(value) && !telephoneRegExp.test(value)) {
     callback(new Error('格式不正确'))
   } else {
     callback()
   }
 }
-
-const passwordRegExp = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,.\/]).*$/
+// 密码必须包含数字、字母和特殊字符
+const passwordRegExp = /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[ -/:-@\[-`{-~]).*$/
 const passwordValidator = (rule, value, callback) => {
   if (value === '') {
     callback(new Error('请输入密码'))
   } else if (value.length < 8 || value.length > 20) {
     callback(new Error('密码长度为8-20位'))
   } else if (!passwordRegExp.test(value)) {
-    callback(new Error('密码必须包含字母、数字和特殊字符'))
+    callback(new Error('密码必须包含数字、字母和特殊字符'))
   } else {
     callback()
   }
 }
-
 const password2Validator = (rule, value, callback) => {
   if (value === '') {
     callback(new Error('请再次输入密码'))
@@ -54,7 +65,6 @@ const password2Validator = (rule, value, callback) => {
     callback()
   }
 }
-
 const rules = reactive({
   emailOrTelephone: [
     {validator: emailOrTelephoneValidator, trigger: 'blur'}
@@ -66,53 +76,122 @@ const rules = reactive({
     {validator: password2Validator, trigger: 'blur'}
   ],
   name: [
-    {required: true, message: '请输入姓名', trigger: 'blur'}
+    {required: true, message: '请输入姓名', trigger: 'blur'},
+    {min: 2, max: 20, message: '姓名长度为2-20位', trigger: 'blur'}
   ],
   school: [
-    {required: true, message: '请输入学校/机构', trigger: 'blur'}
+    {required: true, message: '请输入学校/机构', trigger: 'blur'},
+    {min: 2, max: 50, message: '学校/机构长度为2-50位', trigger: 'blur'}
   ],
   studentNo: [
-    {required: true, message: '请输入学号', trigger: 'blur'}
+    {required: true, message: '请输入学号', trigger: 'blur'},
+    {min: 5, max: 20, message: '学号长度为5-20位', trigger: 'blur'}
   ],
 })
 
-const register = async (formEl) => {
-  if (!formEl) {
+// 切换角色方法
+const changeRole = (accountRole) => {
+  studentRoleRef.value.classList.toggle('active')
+  teacherRoleRef.value.classList.toggle('active')
+  chooseStudent.value = (accountRole === 'STUDENT')
+  registerFormData.accountRole = accountRole
+}
+
+// 请求图形验证码
+const figureCodeData = {
+  url: '',
+  sessionid: ''
+}
+const getFigureCode = () => {
+  postOthers('https://openapiv5.ketangpai.com/', '/UserApi/getFigureCode',
+      {
+        reqtimestamp: new Date().getTime(), // 当前时间戳
+      }, {
+        onJudge: (data) => {
+          return data.status === 1 // status === 1 -> true -> 请求成功
+        },
+        onSuccess: (data) => {
+          figureCodeData.url = data.data.url
+          figureCodeData.sessionid = data.data.sessionid
+          figureCodeImgRef.value.src = data.data.url + '&time=0'
+          // 每次请求图形验证码后，虚拟手机号数 + 1
+          virtualTelephone.value = (parseInt(virtualTelephone.value) + 1).toString().padStart(12,
+              '0')
+        },
+        contentType: 'application/json;charset=UTF-8' // 课堂派的接口需要使用 json 格式
+      })
+}
+
+// 注册方法，参数为注册表单元素（不是 ref）
+const register = async (registerFormEl) => {
+  if (!registerFormEl) {
     return
   }
-  await formEl.validate((valid, fields) => {
+  // 验证表单
+  await registerFormEl.validate((valid, fields) => {
     if (!valid) {
       ElMessage.error('请检查输入项')
       return
     }
-    post('/api/auth/register', {
-      emailOrTelephone: formEl.emailOrTelephone,
-      password: formEl.password,
-      role: formEl.role,
-      name: formEl.name,
-      school: formEl.school,
-      verify: formEl.verify
-    }, (result) => {
-      ElMessage.success(result)
-      router.push('/login')
-    }, (result) => {
-      ElMessage.error(result)
-    })
+    // 检验验证码，使用了课堂派的接口
+    postOthers('https://openapiv5.ketangpai.com/', '/UserApi/sendCode',
+        {
+          type: 'reg', // 类型为注册
+          verify: registerFormData.verify, // 用户输入的验证码
+          mobile: virtualTelephone.value, // 手机号，假拟一个而不要使用用户输入的手机号
+          sessionid: figureCodeData.sessionid, // 前面得到的图形验证码的 sessionid
+          secondDomain: '', // 二级域名，不需要
+          reqtimestamp: new Date().getTime(), // 当前时间戳
+        }, {
+          // 判断接口返回结果
+          onJudge: (data) => {
+            return data.status === 1; // status === 1 -> true -> 请求成功
+          },
+          // 验证码正确，向自己的后端发送注册请求
+          onSuccess: () => {
+            post('/api/auth/register',
+                {
+                  emailOrTelephone: registerFormData.emailOrTelephone,
+                  password: registerFormData.password,
+                  accountRole: registerFormData.accountRole,
+                  name: registerFormData.name,
+                  school: registerFormData.school,
+                  studentNo: registerFormData.studentNo // 选择老师时，学号为 null
+                }, {
+                  onSuccess: (data) => {
+                    ElMessage.success(data.result) // 自己后端返回的信息在 result 属性中
+                    router.push('/login')
+                  },
+                  // 注册失败，提示并重新获取验证码
+                  onFailure: (data) => {
+                    ElMessage.warning(data.result)
+                    getFigureCode()
+                  },
+                  // 出现错误，也是提示并重新获取验证码
+                  onError: (data) => {
+                    ElMessage.error('发生了一些错误，请联系管理员：' + data.result)
+                    getFigureCode()
+                  }
+                })
+          },
+          // 验证码错误，提示并重新获取验证码
+          onFailure: (data) => {
+            ElMessage.warning(data.message) // 课堂派接口返回的信息在 message 属性中
+            getFigureCode()
+          },
+          // 出现错误，也是提示并重新获取验证码
+          onError: (data) => {
+            ElMessage.error('发生了一些错误，请联系管理员：' + data.message)
+            getFigureCode()
+          },
+          // 请求内容类型
+          contentType: 'application/json;charset=UTF-8'
+        })
   })
 }
 
-const changeRole = (role) => {
-  if (role === 'TEACHER') {
-    studentRoleRef.value.classList.remove('active')
-    teacherRoleRef.value.classList.add('active')
-    chooseStudent.value = false
-  } else if (role === 'STUDENT') {
-    teacherRoleRef.value.classList.remove('active')
-    studentRoleRef.value.classList.add('active')
-    chooseStudent.value = true
-  }
-  registerFormData.role = role
-}
+// 页面加载时获取一次图形验证码
+getFigureCode()
 </script>
 
 <template>
@@ -146,7 +225,7 @@ const changeRole = (role) => {
             </el-form-item>
             <el-form-item class="margin-bottom">
               <p class="font-bold font16">选择身份</p>
-              <div class="role-box">
+              <div class="accountRole-box">
                 <div ref="teacherRoleRef"
                      @click="changeRole('TEACHER')"
                      class="item flex-align active">
@@ -174,9 +253,10 @@ const changeRole = (role) => {
               <div class="flex-between">
                 <el-input v-model="registerFormData.verify" type="number"
                           placeholder="请输入计算结果"/>
-                <img
-                    src="https://openapiv5.ketangpai.com/UserApi/verify?sessionid=b9nfbqtdt8mhpnjta2kvt369s3&amp;time=0"
-                    class="verify-img" style="cursor: pointer;" alt=""/>
+                <img ref="figureCodeImgRef" class="verify-img" style="cursor: pointer;"
+                     src="@/assets/img/verify.png"
+                     @click="getFigureCode()"
+                     alt=""/>
               </div>
             </el-form-item>
           </el-form>

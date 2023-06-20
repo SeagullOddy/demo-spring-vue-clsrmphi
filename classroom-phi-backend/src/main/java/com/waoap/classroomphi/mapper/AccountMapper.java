@@ -1,15 +1,17 @@
 package com.waoap.classroomphi.mapper;
 
 import com.waoap.classroomphi.entity.account.Account;
+import com.waoap.classroomphi.entity.account.AuthorizeAccount;
 import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.ConstructorArgs;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Param;
 
 /**
- * 账户的 Mapper 接口。
+ * 账户的 Mapper 接口，用于操作数据库中的账户表。
  *
  * <h2>备注</h2>
  *
@@ -43,13 +45,6 @@ import org.apache.ibatis.annotations.Param;
  *
  * <pre>
  *   &#64;Select("SELECT * FROM test WHERE id = #{id} AND name = #{name}")
- *   Test findTestByIdAndName(&#64;Param Integer id, &#64;Param String name);
- * </pre>
- *
- * 或者：
- *
- * <pre>
- *   &#64;Select("SELECT * FROM test WHERE id = #{id} AND name = #{name}")
  *   Test findTestByIdAndName(&#64;Param("id") Integer id, &#64;Param("name") String name);
  * </pre>
  *
@@ -70,17 +65,50 @@ import org.apache.ibatis.annotations.Param;
  * </ul>
  *
  * @author Waoap
- * @see Account
+ * @see AuthorizeAccount
  */
 @Mapper
 public interface AccountMapper {
 
   /**
-   * 根据账户关键字查询账户。
+   * 根据关键字在数据库中查询结果，返回为认证账户。
    *
-   * @param accountKey 账户关键字，包括账号、邮箱、手机号
+   * @param key 关键字，包括账号、邮箱、手机号
+   * @return 认证账户
+   */
+  @Select("SELECT * FROM account WHERE email = #{key} OR telephone = #{key} OR no = #{key}")
+  AuthorizeAccount findAuthorizeAccountByKey(String key);
+
+  /**
+   * 根据关键字在数据库中查询结果，返回为账户。
+   *
+   * @param key 关键字，包括学号、邮箱、手机号
    * @return 账户
    */
-  @Select("SELECT * FROM account WHERE email = #{accountKey} OR telephone = #{accountKey} OR no = #{accountKey}")
-  Account findAccountByAccountKey(String accountKey);
+  @Select("SELECT no, name, email, telephone, role, school, faculty, major, avatar FROM account WHERE email = #{key} OR telephone = #{key} OR no = #{key}")
+  Account findAccountByKey(String key);
+
+  /**
+   * 查询数据库中账户表自增 id 的下一个值。
+   *
+   * @return 账户表自增 id 的下一个值
+   */
+  @Select("SELECT IFNULL(MAX(id) + 1, 1) FROM account")
+  Long findNextId();
+
+  /**
+   * 根据认证账户的邮箱在数据库中创建一条账户数据。
+   *
+   * @param authorizeAccount 认证账户
+   */
+  @Insert("INSERT INTO account (no, name, email, password, role, school, avatar) VALUES (#{no}, #{name}, #{email}, #{password}, #{role}, #{school}, #{avatar})")
+  void createAccountByEmail(AuthorizeAccount authorizeAccount);
+
+  /**
+   * 根据认证账户的手机号在数据库中创建一条账户数据。
+   *
+   * @param authorizeAccount 认证账户
+   */
+  @Insert("INSERT INTO account (no, name, telephone, password, role, school, avatar) VALUES (#{no}, #{name}, #{telephone}, #{password}, #{role}, #{school}, #{avatar})")
+  void createAccountByTelephone(AuthorizeAccount authorizeAccount);
 }

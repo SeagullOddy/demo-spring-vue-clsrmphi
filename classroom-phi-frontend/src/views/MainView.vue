@@ -2,13 +2,16 @@
 import {get} from "@/net";
 import {ElMessage} from "element-plus";
 import router from "@/router";
+import {useAuthStore} from "@/stores";
 
 const logout = () => {
-  get('/api/auth/logout', (result) => {
-    ElMessage.success(result)
-    router.push('/')
-  }, (result) => {
-    ElMessage.error(result)
+  get('/api/auth/logout', {
+    onSuccess: (data) => {
+      ElMessage.success(data.result)
+      // 登出成功之后，清空 store 中的账户信息
+      useAuthStore().setAccount(null)
+      router.push('/login')
+    }
   })
 }
 </script>
