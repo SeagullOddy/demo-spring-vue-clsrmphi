@@ -1,26 +1,56 @@
 <script setup>
-import {get} from "@/net";
-import {ElMessage} from "element-plus";
-import router from "@/router";
-import {useAuthStore} from "@/stores";
-
-const logout = () => {
-  get('/api/auth/logout', {
-    onSuccess: (data) => {
-      ElMessage.success(data.result)
-      // 登出成功之后，清空 store 中的账户信息
-      useAuthStore().setAccount(null)
-      router.push('/login')
-    }
-  })
-}
+import Header from "@/components/Header.vue";
 </script>
 
 <template>
-  Hello!
-  <el-button type="primary" @click="logout">Logout</el-button>
+  <Header>
+    <template #left>
+      <img src="/images/common/logo_blue.png" style="max-height: 28px;" alt="">
+    </template>
+    <el-menu class="el-menu-demo" mode="horizontal" :ellipsis="false">
+      <el-menu-item index="1" class="is-active">我的课堂</el-menu-item>
+    </el-menu>
+  </Header>
+  <router-view/>
 </template>
 
-<style scoped>
+<style>
+[class*=driver-close-btn] {
+  background: transparent;
+  color: #969696;
+  border: none
+}
 
+div#driver-popover-item .driver-popover-footer button {
+  background-color: #1890ff;
+  color: #fff;
+  text-shadow: none;
+  border: none;
+  line-height: 1.8;
+  border-radius: 4px
+}
+
+div#driver-popover-item .driver-popover-footer button:hover {
+  background-color: #50abff
+}
+
+div#driver-popover-item .driver-popover-footer button:active {
+  background-color: #1269ba
+}
+
+div#driver-popover-item .driver-popover-footer .driver-close-btn {
+  background: transparent;
+  color: #969696;
+  border: none
+}
+
+div#driver-popover-item .driver-popover-footer .driver-close-btn:hover {
+  background-color: transparent
+}
+
+.cmp-vip-dialog .vip-see {
+  color: #4285f4;
+  cursor: pointer;
+  margin-top: 15px
+}
 </style>

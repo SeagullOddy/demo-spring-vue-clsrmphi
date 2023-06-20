@@ -15,7 +15,7 @@ public class RandomAvatarUtil {
    * @return 头像的URL
    */
   public static String getRandomAvatar() {
-    return "https://assets.ketangpai.com//Public/Common/img/40/" + new Random().nextInt(1, 40)
+    return "https://assets.ketangpai.com//Public/Common/img/40/" + new Random().nextInt(10, 40)
         + ".png";
   }
 }

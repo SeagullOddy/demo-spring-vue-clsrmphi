@@ -16,7 +16,12 @@ const router = createRouter({
   }, {
     path: '/main',
     name: 'main',
-    component: () => import('../views/MainView.vue')
+    component: () => import('../views/MainView.vue'),
+    children: [{
+      path: '/main',
+      name: 'main-home',
+      component: () => import('../views/HomeBox.vue')
+    }]
   }, {
     path: '/404',
     name: 'error-404',

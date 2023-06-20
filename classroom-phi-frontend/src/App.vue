@@ -8,7 +8,7 @@ const authStore = useAuthStore()
 if (authStore.getAccount() === null) {
   get('/api/account/me', {
     onSuccess: (data) => {
-      authStore.setAccount(data)
+      authStore.setAccount(data.result)
       router.push('/main')
     },
     onFailure: () => {
@@ -19049,8 +19049,6 @@ div#driver-popover-item .driver-popover-footer .driver-close-btn:hover {
 
 .el-dialog .el-dialog__header .el-dialog__headerbtn {
   position: absolute;
-  top: 17px;
-  right: 20px;
   padding: 0;
   background: 0 0;
   border: none;
@@ -19068,11 +19066,6 @@ div#driver-popover-item .driver-popover-footer .driver-close-btn:hover {
   font-size: 16px;
   color: #3c4043;
   font-weight: 700
-}
-
-.custom-dialog .el-dialog__header .el-dialog__headerbtn {
-  top: 16px;
-  right: 12px
 }
 
 .custom-dialog .el-dialog__header .el-dialog__headerbtn .el-dialog__close {

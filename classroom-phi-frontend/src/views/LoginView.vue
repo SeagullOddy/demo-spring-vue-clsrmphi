@@ -46,13 +46,14 @@ const login = async (formEL) => {
     }, {
       onSuccess: (data) => {
         ElMessage.success(data.result)
-        // 登陆成功之后，获取用户信息存入 store
+        // 登陆成功之后，获取用户登录的账户信息存入 store
         get('/api/account/me', {
           onSuccess: (data) => {
             useAuthStore().setAccount(data.result)
+            // 获取完之后，跳转到主页
+            router.push('/main')
           }
         })
-        router.push('/main')
       }
     })
   })
