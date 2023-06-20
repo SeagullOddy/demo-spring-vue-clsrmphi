@@ -14,43 +14,4 @@ import Header from "@/components/Header.vue";
   <router-view/>
 </template>
 
-<style>
-[class*=driver-close-btn] {
-  background: transparent;
-  color: #969696;
-  border: none
-}
-
-div#driver-popover-item .driver-popover-footer button {
-  background-color: #1890ff;
-  color: #fff;
-  text-shadow: none;
-  border: none;
-  line-height: 1.8;
-  border-radius: 4px
-}
-
-div#driver-popover-item .driver-popover-footer button:hover {
-  background-color: #50abff
-}
-
-div#driver-popover-item .driver-popover-footer button:active {
-  background-color: #1269ba
-}
-
-div#driver-popover-item .driver-popover-footer .driver-close-btn {
-  background: transparent;
-  color: #969696;
-  border: none
-}
-
-div#driver-popover-item .driver-popover-footer .driver-close-btn:hover {
-  background-color: transparent
-}
-
-.cmp-vip-dialog .vip-see {
-  color: #4285f4;
-  cursor: pointer;
-  margin-top: 15px
-}
-</style>
+<style src="@/assets/css/main.css" scoped/>

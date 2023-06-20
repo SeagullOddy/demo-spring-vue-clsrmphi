@@ -5,13 +5,14 @@
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>课堂φ-简单好用的互动课堂管理工具</title>
-    <meta name="keywords" content="课堂派、LMS、PPT互动、课中互动、助教神器、老师神器、作业收发系统、作业批改、在线作业、杜绝作业作弊、本地化部署">
-    <meta name="description" content="教学改革，互动课堂，你可以在这里，组织课中互动，PPT互动，快速发布作业、在线批阅作业、作业查重、统计成绩，随时与你的学生进行沟通，是老师，教务管理的好帮手。支持本地化部署。">
+    <meta name="keywords"
+          content="课堂派、LMS、PPT互动、课中互动、助教神器、老师神器、作业收发系统、作业批改、在线作业、杜绝作业作弊、本地化部署">
+    <meta name="description"
+          content="教学改革，互动课堂，你可以在这里，组织课中互动，PPT互动，快速发布作业、在线批阅作业、作业查重、统计成绩，随时与你的学生进行沟通，是老师，教务管理的好帮手。支持本地化部署。">
   </head>
   <body>
     <noscript><strong>浏览器的jS没有启用，无法浏览网页，请开启js服务</strong></noscript>
     <div id="app"></div>
-    <script type="module" src="./src/main.js"></script>
     <script>
       // 适配屏幕分辨率，缩放 html
       let zoomRate = 1;
@@ -35,18 +36,18 @@
         zoomRate = 0.8;
       }
       // 中控里面的
-      if (location.href.indexOf("/classroom?classtimeid=") > -1){
+      if (location.href.indexOf("/classroom?classtimeid=") > -1) {
         if (screenWidth === 1024) {
           zoomRate = 1;
         }
-          if (screenWidth < 1024) {
+        if (screenWidth < 1024) {
           zoomRate = 1;
         }
-        } else {
-          if (screenWidth === 1024) {
+      } else {
+        if (screenWidth === 1024) {
           zoomRate = 0.77;
         }
-          if (screenWidth < 1024) {
+        if (screenWidth < 1024) {
           zoomRate = 0.7;
         }
       }
@@ -56,5 +57,7 @@
       window.zoomRate = zoomRate;
       document.documentElement.style.zoom = zoomRate;
     </script>
+    <!--  先执行缩放，得到 zoomRate 缩放比例，再加载 app  -->
+    <script type="module" src="./src/main.js"></script>
   </body>
 </html>

@@ -3,15 +3,11 @@ import {reactive, ref} from "vue";
 import {ElMessage} from "element-plus";
 import {get, post} from "@/net";
 import router from "@/router";
-import {useAuthStore} from "@/stores";
-
-// 适配 html 缩放
-const viewLoginStyle = ref({
-  minHeight: "calc(100vh / " + zoomRate + ")"
-})
+import {useStore} from "@/stores";
 
 // 登陆表单的引用
-const loginFormRef = ref(null)
+const loginFormRef = ref()
+
 // 登陆表单的数据
 const loginFormData = reactive({
   username: '',
@@ -29,31 +25,40 @@ const rules = reactive({
   ]
 })
 
-// 登陆验证
+// 登陆（使用异步的方式），参数为表单元素（不是 ref）
 const login = async (formEL) => {
   if (!formEL) {
     return
   }
-  await formEL.validate((valid, fields) => {
+  await formEL.validate((valid) => {
     if (!valid) {
       ElMessage.error('用户名和密码不可为空。')
       return
     }
+    // 验证成功，发送登陆请求
     post('/api/auth/login', {
       username: loginFormData.username,
       password: loginFormData.password,
       remember: loginFormData.remember
     }, {
+      // 登陆成功
       onSuccess: (data) => {
         ElMessage.success(data.result)
-        // 登陆成功之后，获取用户登录的账户信息存入 store
-        get('/api/account/me', {
-          onSuccess: (data) => {
-            useAuthStore().setAccount(data.result)
-            // 获取完之后，跳转到主页
-            router.push('/main')
-          }
-        })
+        // 如果用户信息为空，则获取用户登录的账户信息存入 store
+        if (useStore().getAccount() == null) {
+          get('/api/account/me', {
+            onJudge: (data) => {
+              return data.result != null
+            },
+            onSuccess: (data) => {
+              useStore().setAccount(data.result)
+              router.push('/main')
+            },
+            onFailure: () => {
+              ElMessage.warning('登陆成功但获取用户信息失败，请刷新页面重试')
+            }
+          })
+        }
       }
     })
   })
@@ -61,7 +66,8 @@ const login = async (formEL) => {
 </script>
 
 <template>
-  <div class="view-login" :style="viewLoginStyle">
+  <!-- 使用 ZoomViewStyle 进行分辨率适配 -->
+  <div class="view-login" :style="useStore().getZoomViewStyle()">
     <div class="logo-box">
       <img src="/images/common/logo_blue.png" alt="">
     </div>
@@ -104,7 +110,8 @@ const login = async (formEL) => {
               <el-form-item class="margin-bottom">
                 <div class="flex-between" style="width: 100%;">
                   <el-checkbox v-model="loginFormData.remember">下次自动登录</el-checkbox>
-                  <el-link>忘记密码？</el-link>
+                  <!--     TODO 忘记密码     -->
+                  <el-link @click="ElMessage.warning('功能暂时未实现')">忘记密码？</el-link>
                 </div>
               </el-form-item>
             </el-form>
@@ -136,92 +143,4 @@ const login = async (formEL) => {
 </template>
 
 <style src="@/assets/css/login-register.css"/>
-<style scoped>
-[class*=driver-close-btn] {
-  background: transparent;
-  color: #969696;
-  border: none
-}
-
-div#driver-popover-item .driver-popover-footer button {
-  background-color: #1890ff;
-  color: #fff;
-  text-shadow: none;
-  border: none;
-  line-height: 1.8;
-  border-radius: 4px
-}
-
-div#driver-popover-item .driver-popover-footer button:hover {
-  background-color: #50abff
-}
-
-div#driver-popover-item .driver-popover-footer button:active {
-  background-color: #1269ba
-}
-
-div#driver-popover-item .driver-popover-footer .driver-close-btn {
-  background: transparent;
-  color: #969696;
-  border: none
-}
-
-div#driver-popover-item .driver-popover-footer .driver-close-btn:hover {
-  background-color: transparent
-}
-
-.view-login {
-  background-size: 100%;
-  background-repeat: no-repeat
-}
-
-.view-login .go-register {
-  margin-top: 24px
-}
-
-.view-login .go-register a img {
-  display: block
-}
-
-.weichat-tip {
-  text-align: center;
-  padding-top: 100px;
-  width: 100%;
-  height: 300px;
-  color: #969696
-}
-
-.tabs-nav li {
-  position: relative
-}
-
-.tabs-nav li .line {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  display: none;
-  width: 60px;
-  height: 2px
-}
-
-.tabs-nav .activeLogin .line {
-  display: block
-}
-
-.bottom-box .otherSchool {
-  justify-content: center;
-  margin-top: 14px;
-  padding: 12px 20px;
-  width: 100%;
-  height: 48px;
-  font-size: 14px;
-  font-weight: 500;
-  background: #fff;
-  border-width: 1px;
-  border-style: solid;
-  border-radius: 4px;
-  transition: .1s;
-  cursor: pointer
-}
-</style>
+<style src="@/assets/css/login.css" scoped/>

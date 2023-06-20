@@ -1,10 +1,18 @@
 <script setup>
 import Notice from "@/components/Notice.vue";
-import {useAuthStore} from "@/stores";
+import {useStore} from "@/stores";
 import {nextTick, ref} from "vue";
 import {get} from "@/net";
 import {ElMessage} from "element-plus";
 import router from "@/router";
+
+// 展示账户头像
+const avatarImgRef = ref()
+const store = useStore()
+// 等待 DOM 渲染完成之后，再设置头像
+nextTick(() => {
+  avatarImgRef.value.src = store.getAccount().avatar
+})
 
 // 退出登录
 const logout = () => {
@@ -12,18 +20,11 @@ const logout = () => {
     onSuccess: (data) => {
       ElMessage.success(data.result)
       // 登出成功之后，清空 store 中的账户信息
-      useAuthStore().setAccount(null)
+      useStore().setAccount(null)
       router.push('/login')
     }
   })
 }
-
-// 展示账户头像
-const avatarImgRef = ref(null)
-const authStore = useAuthStore()
-nextTick(() => {
-  avatarImgRef.value.src = authStore.getAccount().avatar
-})
 </script>
 
 <template>
@@ -56,7 +57,7 @@ nextTick(() => {
               <span class="userinfo el-popover__reference" aria-describedby="el-popover-2094"
                     tabindex="0">
                 <img ref="avatarImgRef" class="avatar" alt=""
-                     src="https://assets.ketangpai.com//Public/Common/img/40/40.png">
+                     src="@/assets/img/40.png">
               </span>
             </span>
           </template>
@@ -70,18 +71,4 @@ nextTick(() => {
   </div>
 </template>
 
-<style>
-.el-menu, .el-menu--horizontal > .el-menu-item:not(.is-disabled):focus, .el-menu--horizontal > .el-menu-item:not(.is-disabled):hover, .el-menu--horizontal > .el-submenu .el-submenu__title:hover {
-  background-color: #fff;
-}
-
-.el-menu--horizontal > .el-menu-item {
-  display: list-item;
-  float: left;
-  height: 60px;
-  line-height: 60px;
-  margin: 0;
-  border-bottom: 2px solid transparent;
-  color: #909399;
-}
-</style>
+<style src="@/assets/css/header.css"/>

@@ -3,18 +3,16 @@ import {reactive, ref} from 'vue'
 import {ElMessage} from "element-plus";
 import router from "@/router";
 import {post, postOthers} from "@/net";
+import {useStore} from "@/stores";
 
 // HTML 元素的引用
-const registerFormRef = ref(null)
-const teacherRoleRef = ref(null)
-const studentRoleRef = ref(null)
-const figureCodeImgRef = ref(null)
+const registerFormRef = ref()
+const teacherRoleRef = ref()
+const studentRoleRef = ref()
+const figureCodeImgRef = ref()
 
-// 是否选择学生身份，用于控制学号输入框的显示
+// 是否选择了学生身份，用于控制学号输入框的显示
 const chooseStudent = ref(false)
-
-// 虚拟的十二位手机号，用于课堂派的接口
-const virtualTelephone = ref('000000000000')
 
 // 注册表单的数据
 const registerFormData = reactive({
@@ -89,7 +87,7 @@ const rules = reactive({
   ],
 })
 
-// 切换角色方法
+// 用户切换选择的身份
 const changeRole = (role) => {
   studentRoleRef.value.classList.toggle('active')
   teacherRoleRef.value.classList.toggle('active')
@@ -103,49 +101,65 @@ const figureCodeData = {
   sessionid: ''
 }
 const getFigureCode = () => {
+  // 使用 postOthers 请求其他网站的接口
   postOthers('https://openapiv5.ketangpai.com/', '/UserApi/getFigureCode',
       {
-        reqtimestamp: new Date().getTime(), // 当前时间戳
+        // 当前时间戳
+        reqtimestamp: new Date().getTime(),
       }, {
+        // 用于判断请求是否成功
         onJudge: (data) => {
-          return data.status === 1 // status === 1 -> true -> 请求成功
+          // status === 1 -> true -> 请求成功
+          return data.status === 1
         },
+        // 请求成功后的回调函数
         onSuccess: (data) => {
           figureCodeData.url = data.data.url
           figureCodeData.sessionid = data.data.sessionid
           figureCodeImgRef.value.src = data.data.url + '&time=0'
-          // 每次请求图形验证码后，虚拟手机号数 + 1
-          virtualTelephone.value = (parseInt(virtualTelephone.value) + 1).toString().padStart(12,
-              '0')
         },
-        contentType: 'application/json;charset=UTF-8' // 课堂派的接口需要使用 json 格式
+        // 请求失败后的回调函数
+        onFailure: (data) => {
+          // 课堂派的接口返回的信息在 message 字段中
+          ElMessage.warning(data.message)
+        },
+        onError: (data) => {
+          ElMessage.error('发生了一些错误，请联系管理员：' + data.message)
+        },
+        // 课堂派的接口需要使用 json 格式
+        contentType: 'application/json;charset=UTF-8'
       })
 }
 
-// 注册方法，参数为注册表单元素（不是 ref）
+// 注册方法
 const register = async (registerFormEl) => {
   if (!registerFormEl) {
     return
   }
-  // 验证表单
-  await registerFormEl.validate((valid, fields) => {
+  await registerFormEl.validate((valid) => {
     if (!valid) {
       ElMessage.error('请检查输入项')
       return
     }
-    // 检验验证码，使用了课堂派的接口
+    // 还需要检验验证码，使用了课堂派的接口
     postOthers('https://openapiv5.ketangpai.com/', '/UserApi/sendCode',
         {
-          type: 'reg', // 类型为注册
-          verify: registerFormData.verify, // 用户输入的验证码
-          mobile: virtualTelephone.value, // 手机号，假拟一个而不要使用用户输入的手机号
-          sessionid: figureCodeData.sessionid, // 前面得到的图形验证码的 sessionid
-          secondDomain: '', // 二级域名，不需要
-          reqtimestamp: new Date().getTime(), // 当前时间戳
+          // 类型为注册
+          type: 'reg',
+          // 用户输入的验证码
+          verify: registerFormData.verify,
+          // 手机号，假拟一个而不要使用用户输入的手机号
+          mobile: useStore().nextVirtualTelephone(),
+          // 前面得到的图形验证码的 sessionid
+          sessionid: figureCodeData.sessionid,
+          // 二级域名，不需要
+          secondDomain: '',
+          // 当前时间戳
+          reqtimestamp: new Date().getTime(),
         }, {
-          // 判断接口返回结果
           onJudge: (data) => {
-            return data.status === 1; // status === 1 -> true -> 请求成功
+            // status === 1 -> true -> 请求成功
+            return data.status === 1;
           },
           // 验证码正确，向自己的后端发送注册请求
           onSuccess: () => {
@@ -156,10 +170,12 @@ const register = async (registerFormEl) => {
                   role: registerFormData.role,
                   name: registerFormData.name,
                   school: registerFormData.school,
-                  studentNo: registerFormData.studentNo // 选择老师时，学号为 null
+                  // 选择老师时，学号为 null
+                  studentNo: registerFormData.studentNo
                 }, {
                   onSuccess: (data) => {
-                    ElMessage.success(data.result) // 自己后端返回的信息在 result 属性中
+                    // 自己后端接口返回的结果存在 result 属性中
+                    ElMessage.success(data.result)
                     router.push('/login')
                   },
                   // 注册失败，提示并重新获取验证码
@@ -167,24 +183,24 @@ const register = async (registerFormEl) => {
                     ElMessage.warning(data.result)
                     getFigureCode()
                   },
-                  // 出现错误，也是提示并重新获取验证码
+                  // 请求出现错误，也是提示并重新获取验证码
                   onError: (data) => {
                     ElMessage.error('发生了一些错误，请联系管理员：' + data.result)
                     getFigureCode()
                   }
                 })
           },
-          // 验证码错误，提示并重新获取验证码
+          // 输入的验证码错误，提示并重新获取验证码
           onFailure: (data) => {
             ElMessage.warning(data.message) // 课堂派接口返回的信息在 message 属性中
             getFigureCode()
           },
-          // 出现错误，也是提示并重新获取验证码
+          // 请求出现错误，也是提示并重新获取验证码
           onError: (data) => {
             ElMessage.error('发生了一些错误，请联系管理员：' + data.message)
             getFigureCode()
           },
-          // 请求内容类型
+          // 课堂派的接口需要使用 json 格式
           contentType: 'application/json;charset=UTF-8'
         })
   })
@@ -195,7 +211,8 @@ getFigureCode()
 </script>
 
 <template>
-  <div class="view-login view-regist" style="min-height: calc(76.9231vh);">
+  <!-- 使用 ZoomViewStyle 适配不同分辨率 -->
+  <div class="view-login view-regist" :style="useStore().getZoomViewStyle()">
     <div class="logo-box">
       <img src="/images/common/logo_blue.png" alt="">
     </div>
@@ -229,14 +246,14 @@ getFigureCode()
                 <div ref="teacherRoleRef"
                      @click="changeRole('TEACHER')"
                      class="item flex-align active">
-                  <img src="@/assets/img/teacher.svg" class="icon" alt=""><span
-                    class="name">老师</span>
+                  <img src="@/assets/img/teacher.svg" class="icon" alt="">
+                  <span class="name">老师</span>
                 </div>
                 <div ref="studentRoleRef"
                      @click="changeRole('STUDENT')"
                      class="item flex-align">
-                  <img src="@/assets/img/student.svg" class="icon" alt=""><span
-                    class="name">学生</span>
+                  <img src="@/assets/img/student.svg" class="icon" alt="">
+                  <span class="name">学生</span>
                 </div>
               </div>
             </el-form-item>
@@ -277,103 +294,7 @@ getFigureCode()
     </div>
   </div>
 </template>
+
 <style src="@/assets/css/login-register.css"/>
-<style scoped>
-[class*=driver-close-btn] {
-  background: transparent;
-  color: #969696;
-  border: none
-}
+<style src="@/assets/css/register.css" scoped/>
 
-div#driver-popover-item .driver-popover-footer button {
-  background-color: #1890ff;
-  color: #fff;
-  text-shadow: none;
-  border: none;
-  line-height: 1.8;
-  border-radius: 4px
-}
-
-div#driver-popover-item .driver-popover-footer button:hover {
-  background-color: #50abff
-}
-
-div#driver-popover-item .driver-popover-footer button:active {
-  background-color: #1269ba
-}
-
-div#driver-popover-item .driver-popover-footer .driver-close-btn {
-  background: transparent;
-  color: #969696;
-  border: none
-}
-
-div#driver-popover-item .driver-popover-footer .driver-close-btn:hover {
-  background-color: transparent
-}
-
-.view-regist {
-  display: flex;
-  flex-direction: column;
-  background-size: 100%;
-  background-repeat: no-repeat;
-  padding-top: 20px
-}
-
-.view-regist .login-content {
-  flex: 1;
-  display: flex;
-  align-items: center
-}
-
-.view-regist .login-content .right {
-  margin: 12px 0
-}
-
-.view-regist .login-content .right .verify-img {
-  cursor: pointer;
-  display: block;
-  border-radius: 8px;
-  margin-left: 16px;
-  width: 154px;
-  height: 48px
-}
-
-.view-regist .login-content .right .bottom-box {
-  padding-bottom: 12px;
-  margin-top: 12px
-}
-
-.view-regist .email-success {
-  padding: 12px 0
-}
-
-.view-regist .email-success .el-button {
-  height: 34px;
-  padding-top: 0;
-  padding-bottom: 0;
-  line-height: 32px
-}
-
-.view-regist .email-success h1 {
-  color: #00ca90;
-  font-size: 22px;
-  margin-bottom: 10px
-}
-
-.view-regist .email-success h1 i {
-  font-size: 22px;
-  margin-right: 10px
-}
-
-.view-regist .email-success p {
-  font-size: 14px;
-  color: #3c4043;
-  line-height: 1.5
-}
-
-.view-regist .email-success .email-tip {
-  font-size: 12px;
-  color: #4285f4
-}
-</style>

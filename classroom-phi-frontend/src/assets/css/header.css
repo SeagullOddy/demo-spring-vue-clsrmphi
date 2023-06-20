@@ -1,0 +1,13 @@
+.el-menu, .el-menu--horizontal > .el-menu-item:not(.is-disabled):focus, .el-menu--horizontal > .el-menu-item:not(.is-disabled):hover, .el-menu--horizontal > .el-submenu .el-submenu__title:hover {
+  background-color: #fff;
+}
+
+.el-menu--horizontal > .el-menu-item {
+  display: list-item;
+  float: left;
+  height: 60px;
+  line-height: 60px;
+  margin: 0;
+  border-bottom: 2px solid transparent;
+  color: #909399;
+}

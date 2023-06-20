@@ -1,0 +1,64 @@
+.view-regist {
+  display: flex;
+  flex-direction: column;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  padding-top: 20px
+}
+
+.view-regist .login-content {
+  flex: 1;
+  display: flex;
+  align-items: center
+}
+
+.view-regist .login-content .right {
+  margin: 12px 0
+}
+
+.view-regist .login-content .right .verify-img {
+  cursor: pointer;
+  display: block;
+  border-radius: 8px;
+  margin-left: 16px;
+  width: 154px;
+  height: 48px
+}
+
+.view-regist .login-content .right .bottom-box {
+  padding-bottom: 12px;
+  margin-top: 12px
+}
+
+.view-regist .email-success {
+  padding: 12px 0
+}
+
+.view-regist .email-success .el-button {
+  height: 34px;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 32px
+}
+
+.view-regist .email-success h1 {
+  color: #00ca90;
+  font-size: 22px;
+  margin-bottom: 10px
+}
+
+.view-regist .email-success h1 i {
+  font-size: 22px;
+  margin-right: 10px
+}
+
+.view-regist .email-success p {
+  font-size: 14px;
+  color: #3c4043;
+  line-height: 1.5
+}
+
+.view-regist .email-success .email-tip {
+  font-size: 12px;
+  color: #4285f4
+}

@@ -1,0 +1,54 @@
+.view-login {
+  background-size: 100%;
+  background-repeat: no-repeat
+}
+
+.view-login .go-register {
+  margin-top: 24px
+}
+
+.view-login .go-register a img {
+  display: block
+}
+
+.weichat-tip {
+  text-align: center;
+  padding-top: 100px;
+  width: 100%;
+  height: 300px;
+  color: #969696
+}
+
+.tabs-nav li {
+  position: relative
+}
+
+.tabs-nav li .line {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  width: 60px;
+  height: 2px
+}
+
+.tabs-nav .activeLogin .line {
+  display: block
+}
+
+.bottom-box .otherSchool {
+  justify-content: center;
+  margin-top: 14px;
+  padding: 12px 20px;
+  width: 100%;
+  height: 48px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #fff;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 4px;
+  transition: .1s;
+  cursor: pointer
+}

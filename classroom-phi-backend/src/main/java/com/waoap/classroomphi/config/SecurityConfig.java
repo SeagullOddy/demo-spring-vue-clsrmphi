@@ -245,15 +245,17 @@ public class SecurityConfig {
   /**
    * 登出成功时执行此方法返回结果。
    *
-   * @param ignoredHttpServletRequest HttpServletRequest
-   * @param httpServletResponse       HttpServletResponse
-   * @param ignoredAuthentication     Authentication
+   * @param httpServletRequest    HttpServletRequest
+   * @param httpServletResponse   HttpServletResponse
+   * @param ignoredAuthentication Authentication
    * @throws IOException if an input or output exception occurs
    */
-  private void onLogoutSuccess(HttpServletRequest ignoredHttpServletRequest,
+  private void onLogoutSuccess(HttpServletRequest httpServletRequest,
       HttpServletResponse httpServletResponse, Authentication ignoredAuthentication)
       throws IOException {
     httpServletResponse.setCharacterEncoding("UTF-8");
+    // 用户登出成功，清除 session 中的 account
+    httpServletRequest.getSession().removeAttribute("account");
     httpServletResponse.getWriter().write(JSONObject.toJSONString(RestBean.success("登出成功")));
   }
 }

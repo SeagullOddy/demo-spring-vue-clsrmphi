@@ -16,17 +16,4 @@
   </div>
 </template>
 
-<style>
-.el-tabs__item {
-  padding: 0 20px;
-  height: 40px;
-  box-sizing: border-box;
-  line-height: 40px;
-  display: inline-block;
-  list-style: none;
-  font-size: 16px;
-  font-weight: 500;
-  color: #303133;
-  position: relative;
-}
-</style>
+<style src="@/assets/css/notice.css"/>
