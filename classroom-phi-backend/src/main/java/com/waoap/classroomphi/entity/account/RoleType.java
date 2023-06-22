@@ -5,17 +5,17 @@ package com.waoap.classroomphi.entity.account;
  *
  * @author Waoap
  */
-public enum AccountRole {
+public enum RoleType {
   TEACHER("老师"), STUDENT("学生");
 
-  private final String value;
+  private final String name;
 
-  AccountRole(String value) {
-    this.value = value;
+  RoleType(String name) {
+    this.name = name;
   }
 
   @Override
   public String toString() {
-    return value;
+    return name;
   }
 }

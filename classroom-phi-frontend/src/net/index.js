@@ -6,11 +6,11 @@ const defaultConfig = {
   onJudge: (data) => {
     return data.success
   },
-  onSuccess: (data) => ElMessage.success(data.result),
-  onFailure: (data) => ElMessage.warning(data.result),
+  onSuccess: (data) => ElMessage.success(data.message),
+  onFailure: (data) => ElMessage.warning(data.message),
   onError: (data) => ElMessage.error(
-      '发生了一些错误，请联系管理员：' + data.result),
-  contentType: "application/x-www-form-urlencoded"
+      '发生了一些错误，请联系管理员：' + data.message),
+  contentType: "application/json;charset=UTF-8"
 }
 
 /**
@@ -52,7 +52,8 @@ function post(url, data, config = {},) {
     headers: {
       "Content-Type": config.contentType // 使用配置中的 contentType
     }, withCredentials: true, // 允许携带 cookie，因为后端没有使用 JWT
-  }).then(({data}) => { // 解构赋值，data 是响应体，其中包含 status, success, result 三个属性
+  }).then(({data}) => { // 解构赋值，data 是响应体，其中包含 status, success, data 三个属性
+    console.log(data);
     if (config.onJudge(data)) { // 调用配置中的 onJudge 方法，判断请求否成功
       config.onSuccess(data); // 如果成功，调用配置中的 onSuccess 方法
     } else {

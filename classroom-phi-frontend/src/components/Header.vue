@@ -2,7 +2,7 @@
 import Notice from "@/components/Notice.vue";
 import {useStore} from "@/stores";
 import {nextTick, ref} from "vue";
-import {get} from "@/net";
+import {post} from "@/net";
 import {ElMessage} from "element-plus";
 import router from "@/router";
 
@@ -16,9 +16,9 @@ nextTick(() => {
 
 // 退出登录
 const logout = () => {
-  get('/api/auth/logout', {
-    onSuccess: (data) => {
-      ElMessage.success(data.result)
+  post('/api/auth/logout', {}, {
+    onSuccess: (result) => {
+      ElMessage.success(result.message)
       // 登出成功之后，清空 store 中的账户信息
       useStore().setAccount(null)
       router.push('/login')

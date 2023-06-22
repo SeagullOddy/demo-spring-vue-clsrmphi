@@ -14,55 +14,62 @@ public class RestBean<T> {
 
   private Boolean success;
 
-  private T result;
+  private String message;
 
-  private RestBean(Integer status, Boolean success, T result) {
+  private T data;
+
+  private RestBean(Integer status, Boolean success, String message, T data) {
     this.status = status;
     this.success = success;
-    this.result = result;
+    this.message = message;
+    this.data = data;
   }
 
   /**
-   * 返回一个表示成功的结果。
+   * 返回一个带有消息的成功结果。
    *
-   * @param <T> 返回结果的类型
-   * @return 表示成功的 RestBean 对象
+   * @param message 消息
+   * @param <T>     返回结果中数据的类型
+   * @return 表示成功的结果
    */
-  public static <T> RestBean<T> success() {
-    return new RestBean<>(200, true, null);
+  public static <T> RestBean<T> success(String message) {
+    return new RestBean<>(200, true, message, null);
   }
 
   /**
-   * 返回一个表示成功的结果。
+   * 返回一个带有消息和数据的成功结果。
    *
-   * @param result 返回的结果
-   * @param <T>    返回结果的类型
-   * @return 表示成功的 RestBean 对象
+   * @param message 消息
+   * @param data    数据
+   * @param <T>     返回结果中数据的类型
+   * @return 表示成功的结果
    */
-  public static <T> RestBean<T> success(T result) {
-    return new RestBean<>(200, true, result);
+  public static <T> RestBean<T> success(String message, T data) {
+    return new RestBean<>(200, true, message, data);
   }
 
   /**
-   * 返回一个表示失败的结果。
+   * 返回一个带有状态码和消息的失败结果。
    *
-   * @param status 状态码
-   * @param <T>    返回结果的类型
-   * @return 表示失败的 RestBean 对象
+   * @param status  状态码
+   * @param message 消息
+   * @param <T>     返回结果中数据的类型
+   * @return 表示失败的结果
    */
-  public static <T> RestBean<T> failure(Integer status) {
-    return new RestBean<>(status, false, null);
+  public static <T> RestBean<T> failure(Integer status, String message) {
+    return new RestBean<>(status, false, message, null);
   }
 
   /**
-   * 返回一个表示失败的结果。
+   * 返回一个带有状态码、消息和数据的失败结果。
    *
-   * @param status 状态码
-   * @param result 返回的结果
-   * @param <T>    返回结果的类型
-   * @return 表示失败的 RestBean 对象
+   * @param status  状态码
+   * @param message 消息
+   * @param data    数据
+   * @param <T>     返回结果中数据的类型
+   * @return 表示失败的结果
    */
-  public static <T> RestBean<T> failure(Integer status, T result) {
-    return new RestBean<>(status, false, result);
+  public static <T> RestBean<T> failure(Integer status, String message, T data) {
+    return new RestBean<>(status, false, message, data);
   }
 }

@@ -1,7 +1,6 @@
 package com.waoap.classroomphi.interceptor;
 
 import com.waoap.classroomphi.controller.AccountController;
-import com.waoap.classroomphi.entity.account.Account;
 import com.waoap.classroomphi.mapper.AccountMapper;
 import com.waoap.classroomphi.service.impl.AuthorizeServiceImpl;
 import jakarta.annotation.Nonnull;
@@ -23,7 +22,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class AuthorizeInterceptor implements HandlerInterceptor {
 
   @Resource
-  AccountMapper accountMapper;
+  private AccountMapper accountMapper;
 
   /**
    * 拦截器的前置处理，拦截用户认证时所使用的 username，实际是 accountNo 账号（于
@@ -40,9 +39,9 @@ public class AuthorizeInterceptor implements HandlerInterceptor {
       @Nonnull Object handler) {
     SecurityContext context = SecurityContextHolder.getContext();
     Authentication authentication = context.getAuthentication();
-    // getName 获取的实际上是 accountNo 账号，通过它查询对应的账户，放入 session 中
-    Account account = accountMapper.findAccountByKey(authentication.getName());
-    request.getSession().setAttribute("account", account);
+    // getName 获取的实际上是用户登录使用的 key，将对应的账户放入 session 中
+    request.getSession()
+        .setAttribute("account", accountMapper.findAccountByKey(authentication.getName()));
     return true;
   }
 }

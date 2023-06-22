@@ -10,6 +10,8 @@ import lombok.Data;
 @Data
 public class Account {
 
+  private Long id;
+
   private String no;
 
   private String name;
@@ -18,7 +20,7 @@ public class Account {
 
   private String telephone;
 
-  private AccountRole role;
+  private RoleType roleType;
 
   private String school;
 

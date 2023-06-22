@@ -1,4 +1,4 @@
-package com.waoap.classroomphi.entity;
+package com.waoap.classroomphi.entity.role;
 
 import lombok.Data;
 
@@ -6,7 +6,7 @@ import lombok.Data;
  * @author Waoap
  */
 @Data
-public class Teacher {
+public class Teacher implements Role {
 
   private Long id;
 

@@ -19,7 +19,7 @@ const registerFormData = reactive({
   emailOrTelephone: '', // 邮箱/手机号
   password: '',
   password2: '',
-  role: 'TEACHER', // 默认为老师，注册页面打开时默认选则的是老师身份
+  roleType: 'TEACHER', // 默认为老师，注册页面打开时默认选则的是老师身份
   name: '',
   school: '',
   studentNo: null, // 默认为 null，此时在后端不会收到该字段
@@ -88,11 +88,11 @@ const rules = reactive({
 })
 
 // 用户切换选择的身份
-const changeRole = (role) => {
+const changeRoleType = (roleType) => {
   studentRoleRef.value.classList.toggle('active')
   teacherRoleRef.value.classList.toggle('active')
-  chooseStudent.value = (role === 'STUDENT')
-  registerFormData.role = role
+  chooseStudent.value = (roleType === 'STUDENT')
+  registerFormData.roleType = roleType
 }
 
 // 请求图形验证码
@@ -108,35 +108,33 @@ const getFigureCode = () => {
         reqtimestamp: new Date().getTime(),
       }, {
         // 用于判断请求是否成功
-        onJudge: (data) => {
+        onJudge: (result) => {
           // status === 1 -> true -> 请求成功
-          return data.status === 1
+          return result.status === 1
         },
         // 请求成功后的回调函数
-        onSuccess: (data) => {
-          figureCodeData.url = data.data.url
-          figureCodeData.sessionid = data.data.sessionid
-          figureCodeImgRef.value.src = data.data.url + '&time=0'
+        onSuccess: (result) => {
+          figureCodeData.url = result.data.url
+          figureCodeData.sessionid = result.data.sessionid
+          figureCodeImgRef.value.src = result.data.url + '&time=0'
         },
         // 请求失败后的回调函数
-        onFailure: (data) => {
+        onFailure: (result) => {
           // 课堂派的接口返回的信息在 message 字段中
-          ElMessage.warning(data.message)
+          ElMessage.warning(result.message)
         },
-        onError: (data) => {
-          ElMessage.error('发生了一些错误，请联系管理员：' + data.message)
-        },
-        // 课堂派的接口需要使用 json 格式
-        contentType: 'application/json;charset=UTF-8'
+        onError: (result) => {
+          ElMessage.error('发生了一些错误，请联系管理员：' + result.message)
+        }
       })
 }
 
 // 注册方法
-const register = async (registerFormEl) => {
-  if (!registerFormEl) {
+const register = async () => {
+  if (!registerFormRef.value) {
     return
   }
-  await registerFormEl.validate((valid) => {
+  await registerFormRef.value.validate(valid => {
     if (!valid) {
       ElMessage.error('请检查输入项')
       return
@@ -157,9 +155,9 @@ const register = async (registerFormEl) => {
           // 当前时间戳
           reqtimestamp: new Date().getTime(),
         }, {
-          onJudge: (data) => {
+          onJudge: (result) => {
             // status === 1 -> true -> 请求成功
-            return data.status === 1;
+            return result.status === 1;
           },
           // 验证码正确，向自己的后端发送注册请求
           onSuccess: () => {
@@ -167,41 +165,40 @@ const register = async (registerFormEl) => {
                 {
                   emailOrTelephone: registerFormData.emailOrTelephone,
                   password: registerFormData.password,
-                  role: registerFormData.role,
+                  roleType: registerFormData.roleType,
                   name: registerFormData.name,
                   school: registerFormData.school,
                   // 选择老师时，学号为 null
                   studentNo: registerFormData.studentNo
                 }, {
-                  onSuccess: (data) => {
-                    // 自己后端接口返回的结果存在 result 属性中
-                    ElMessage.success(data.result)
+                  onSuccess: (result) => {
+                    // 自己后端接口返回的消息存在 message 属性中
+                    ElMessage.success(result.message)
                     router.push('/login')
                   },
                   // 注册失败，提示并重新获取验证码
-                  onFailure: (data) => {
-                    ElMessage.warning(data.result)
+                  onFailure: (result) => {
+                    ElMessage.warning(result.message)
                     getFigureCode()
                   },
                   // 请求出现错误，也是提示并重新获取验证码
-                  onError: (data) => {
-                    ElMessage.error('发生了一些错误，请联系管理员：' + data.result)
+                  onError: (result) => {
+                    ElMessage.error('发生了一些错误，请联系管理员：' + result.message)
                     getFigureCode()
-                  }
+                  },
+                  contentType: "application/x-www-form-urlencoded"
                 })
           },
           // 输入的验证码错误，提示并重新获取验证码
-          onFailure: (data) => {
-            ElMessage.warning(data.message) // 课堂派接口返回的信息在 message 属性中
+          onFailure: (result) => {
+            ElMessage.warning(result.message) // 课堂派接口返回的信息在 message 属性中
             getFigureCode()
           },
           // 请求出现错误，也是提示并重新获取验证码
-          onError: (data) => {
-            ElMessage.error('发生了一些错误，请联系管理员：' + data.message)
+          onError: (result) => {
+            ElMessage.error('发生了一些错误，请联系管理员：' + result.message)
             getFigureCode()
-          },
-          // 课堂派的接口需要使用 json 格式
-          contentType: 'application/json;charset=UTF-8'
+          }
         })
   })
 }
@@ -233,24 +230,24 @@ getFigureCode()
                         placeholder="请输入邮箱/手机号"/>
             </el-form-item>
             <el-form-item class="margin-bottom" prop="password">
-              <el-input v-model="registerFormData.password" type="password"
+              <el-input v-model="registerFormData.password" type="password" show-password
                         placeholder="请输入密码"/>
             </el-form-item>
             <el-form-item class="margin-bottom" prop="password2">
-              <el-input v-model="registerFormData.password2" type="password"
+              <el-input v-model="registerFormData.password2" type="password" show-password
                         placeholder="请再次输入密码确认"/>
             </el-form-item>
             <el-form-item class="margin-bottom">
               <p class="font-bold font16">选择身份</p>
               <div class="role-box">
                 <div ref="teacherRoleRef"
-                     @click="changeRole('TEACHER')"
+                     @click="changeRoleType('TEACHER')"
                      class="item flex-align active">
                   <img src="@/assets/img/teacher.svg" class="icon" alt="">
                   <span class="name">老师</span>
                 </div>
                 <div ref="studentRoleRef"
-                     @click="changeRole('STUDENT')"
+                     @click="changeRoleType('STUDENT')"
                      class="item flex-align">
                   <img src="@/assets/img/student.svg" class="icon" alt="">
                   <span class="name">学生</span>
@@ -279,7 +276,7 @@ getFigureCode()
           </el-form>
           <div class="bottom-box">
             <div class="margin-top">
-              <el-button @click="register(registerFormRef)" type="primary" size="large"
+              <el-button @click="register()" type="primary" size="large"
                          style="width: 100%;">注册
               </el-button>
             </div>

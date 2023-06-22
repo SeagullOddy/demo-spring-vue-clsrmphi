@@ -211,7 +211,6 @@ public class SecurityConfig {
     return httpSecurity.build();
   }
 
-
   /**
    * 登录成功时执行此方法返回结果。
    *
@@ -230,32 +229,29 @@ public class SecurityConfig {
   /**
    * 登录失败时执行此方法返回结果。
    *
-   * @param ignoredHttpServletRequest HttpServletRequest
-   * @param httpServletResponse       HttpServletResponse
-   * @param e                         AuthenticationException
+   * @param request  HttpServletRequest
+   * @param response HttpServletResponse
+   * @param e        AuthenticationException
    * @throws IOException if an input or output exception occurs
    */
-  private void onLoginFailure(HttpServletRequest ignoredHttpServletRequest,
-      HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException {
-    httpServletResponse.setCharacterEncoding("UTF-8");
-    httpServletResponse.getWriter()
-        .write(JSONObject.toJSONString(RestBean.failure(401, e.getMessage())));
+  private void onLoginFailure(HttpServletRequest request, HttpServletResponse response,
+      AuthenticationException e) throws IOException {
+    response.setContentType("application/json;charset=UTF-8"); // 设置响应类型，解决前端接收到的结果乱码的问题
+    response.getWriter()
+        .write(JSONObject.toJSONString(RestBean.failure(401, "登录失败：" + e.getMessage())));
   }
 
   /**
    * 登出成功时执行此方法返回结果。
    *
-   * @param httpServletRequest    HttpServletRequest
-   * @param httpServletResponse   HttpServletResponse
+   * @param request               HttpServletRequest
+   * @param response              HttpServletResponse
    * @param ignoredAuthentication Authentication
    * @throws IOException if an input or output exception occurs
    */
-  private void onLogoutSuccess(HttpServletRequest httpServletRequest,
-      HttpServletResponse httpServletResponse, Authentication ignoredAuthentication)
-      throws IOException {
-    httpServletResponse.setCharacterEncoding("UTF-8");
-    // 用户登出成功，清除 session 中的 account
-    httpServletRequest.getSession().removeAttribute("account");
-    httpServletResponse.getWriter().write(JSONObject.toJSONString(RestBean.success("登出成功")));
+  private void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
+      Authentication ignoredAuthentication) throws IOException {
+    response.setContentType("application/json;charset=UTF-8");
+    response.getWriter().write(JSONObject.toJSONString(RestBean.success("登出成功")));
   }
 }

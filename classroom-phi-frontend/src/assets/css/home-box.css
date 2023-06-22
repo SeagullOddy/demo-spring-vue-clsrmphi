@@ -729,7 +729,7 @@
 }
 
 .component-teacher_file .el-dialog__body {
-  height: 505px;
+  height: 400px;
   display: flex;
   flex-flow: column nowrap
 }
@@ -1580,4 +1580,20 @@ div#driver-popover-item .driver-popover-footer .driver-close-btn:hover {
 .dialog-footer-more .footer-left {
   font-size: 12px;
   display: flex
+}
+
+.el-button--primary {
+  color: #fff;
+  background-color: #4285f4;
+  border-color: #4285f4;
+}
+
+.el-button--primary:focus, .el-button--primary:hover {
+  background: #689df6;
+  border-color: #689df6;
+  color: #fff;
+}
+
+.add-classRoom-dialog .none-view .courseIntro {
+  margin-bottom: 24px;
 }

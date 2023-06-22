@@ -17,7 +17,7 @@ import lombok.Data;
 public class AuthorizeAccount {
 
   /**
-   * 账户的唯一标识符，用户不可见，使用自增主键。
+   * 账户的唯一标识符，使用自增主键。
    */
   private Long id;
 
@@ -49,9 +49,9 @@ public class AuthorizeAccount {
   /**
    * 账户所属角色。
    *
-   * @see AccountRole
+   * @see RoleType
    */
-  private AccountRole role;
+  private RoleType roleType;
 
   /**
    * 账户所属学校或组织。

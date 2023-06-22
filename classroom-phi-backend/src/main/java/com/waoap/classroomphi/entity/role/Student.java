@@ -1,4 +1,4 @@
-package com.waoap.classroomphi.entity;
+package com.waoap.classroomphi.entity.role;
 
 import java.sql.Date;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.Data;
  * @author Waoap
  */
 @Data
-public class Student {
+public class Student implements Role {
 
   private Long id;
 
