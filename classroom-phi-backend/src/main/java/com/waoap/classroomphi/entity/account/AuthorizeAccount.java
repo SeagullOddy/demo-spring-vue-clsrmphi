@@ -48,10 +48,8 @@ public class AuthorizeAccount {
 
   /**
    * 账户所属角色。
-   *
-   * @see RoleType
    */
-  private RoleType roleType;
+  private String role;
 
   /**
    * 账户所属学校或组织。

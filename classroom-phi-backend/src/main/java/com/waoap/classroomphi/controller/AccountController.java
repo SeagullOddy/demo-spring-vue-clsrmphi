@@ -52,10 +52,10 @@ public class AccountController {
    */
   @GetMapping("/get-role")
   public RestBean<Role> getRole(@SessionAttribute("account") Account account) {
-    if (account.getRoleType().equals(RoleType.TEACHER)) {
+    if (account.getRole().equals(RoleType.TEACHER.name())) {
       Teacher teacher = teacherMapper.findTeacherByAccountId(account.getId());
       return RestBean.success("访问成功", teacher);
-    } else if (account.getRoleType().equals(RoleType.STUDENT)) {
+    } else if (account.getRole().equals(RoleType.STUDENT.name())) {
       Student student = studentMapper.findStudentByAccountId(account.getId());
       return RestBean.success("访问成功", student);
     }

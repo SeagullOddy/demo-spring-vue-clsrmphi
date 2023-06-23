@@ -20,7 +20,7 @@ public class Account {
 
   private String telephone;
 
-  private RoleType roleType;
+  private String role;
 
   private String school;
 

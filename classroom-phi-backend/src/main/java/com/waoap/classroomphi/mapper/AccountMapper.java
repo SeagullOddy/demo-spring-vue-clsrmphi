@@ -85,7 +85,7 @@ public interface AccountMapper {
    * @param key 关键字，包括账号、邮箱、手机号
    * @return 账户
    */
-  @Select("SELECT id, no, name, email, telephone, roleType, school, faculty, major, avatar FROM account WHERE email = #{key} OR telephone = #{key} OR no = #{key}")
+  @Select("SELECT id, no, name, email, telephone, role, school, faculty, major, avatar FROM account WHERE email = #{key} OR telephone = #{key} OR no = #{key}")
   Account findAccountByKey(String key);
 
   /**
@@ -101,7 +101,7 @@ public interface AccountMapper {
    *
    * @param authorizeAccount 认证账户
    */
-  @Insert("INSERT INTO account (no, name, email, password, roleType, school, avatar) VALUES (#{no}, #{name}, #{email}, #{password}, #{roleType}, #{school}, #{avatar})")
+  @Insert("INSERT INTO account (no, name, email, password, role, school, avatar) VALUES (#{no}, #{name}, #{email}, #{password}, #{role}, #{school}, #{avatar})")
   void createAccountByEmail(AuthorizeAccount authorizeAccount);
 
   /**
@@ -109,6 +109,6 @@ public interface AccountMapper {
    *
    * @param authorizeAccount 认证账户
    */
-  @Insert("INSERT INTO account (no, name, telephone, password, roleType, school, avatar) VALUES (#{no}, #{name}, #{telephone}, #{password}, #{roleType}, #{school}, #{avatar})")
+  @Insert("INSERT INTO account (no, name, telephone, password, role, school, avatar) VALUES (#{no}, #{name}, #{telephone}, #{password}, #{role}, #{school}, #{avatar})")
   void createAccountByTelephone(AuthorizeAccount authorizeAccount);
 }

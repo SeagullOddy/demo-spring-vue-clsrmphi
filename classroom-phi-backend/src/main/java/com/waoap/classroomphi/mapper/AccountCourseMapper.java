@@ -17,7 +17,7 @@ public interface AccountCourseMapper {
    * @param relationship 关系
    * @return 课程 id 列表
    */
-  @Select("SELECT course_id FROM account_course WHERE account_id = #{accountId} AND relationship = '#{relationship}'")
+  @Select("SELECT course_id FROM account_course WHERE account_id = #{accountId} AND relationship = #{relationship}")
   List<Long> findCourseIdsByRelationShip(Long accountId, String relationship);
 
   /**

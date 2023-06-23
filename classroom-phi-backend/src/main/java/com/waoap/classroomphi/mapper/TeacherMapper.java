@@ -3,6 +3,8 @@ package com.waoap.classroomphi.mapper;
 import com.waoap.classroomphi.entity.role.Teacher;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 
 /**
@@ -25,5 +27,8 @@ public interface TeacherMapper {
    * @param accountId 账户 id
    */
   @Select("SELECT * FROM teacher WHERE account_id = #{accountId}")
+  @Results({
+      @Result(property = "accountId", column = "account_id")
+  })
   Teacher findTeacherByAccountId(Long accountId);
 }

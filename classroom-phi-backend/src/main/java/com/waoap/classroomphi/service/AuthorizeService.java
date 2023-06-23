@@ -1,6 +1,5 @@
 package com.waoap.classroomphi.service;
 
-import com.waoap.classroomphi.entity.account.RoleType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
@@ -10,6 +9,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  */
 public interface AuthorizeService extends UserDetailsService {
 
-  Integer registerAccount(String emailOrTelephone, String password, RoleType roleType,
+  Integer registerAccount(String emailOrTelephone, String password, String role,
       String name, String school, String studentNo);
 }

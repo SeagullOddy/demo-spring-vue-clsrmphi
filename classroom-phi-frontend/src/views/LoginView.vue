@@ -25,53 +25,6 @@ const rules = reactive({
   ]
 })
 
-// 如果用户信息为空，则获取用户登录的账户信息存入 store
-const initStoreAccount = () => {
-  if (useStore().getAccount() == null) {
-    get('/api/account/me', {
-      onJudge: (result) => {
-        return result.data != null
-      },
-      onSuccess: (result) => {
-        useStore().setAccount(result.data)
-        router.push('/main')
-      },
-      onFailure: () => {
-        ElMessage.warning('登陆成功但获取的用户信息为空，请刷新页面重试')
-      }
-    })
-  }
-}
-
-const initStoreCourses = () => {
-  // 获取用户的置顶课程
-  get('/api/course/get-pinned', {
-    onSuccess: (result) => {
-      useStore().setPinnedCourses(result.data)
-    }
-  })
-  // 只有老师身份的用户才需要获取创建的课程
-  if (useStore().getAccount().roleType === 'TEACHER') {
-    get('/api/course/get-created', {
-      onSuccess: (result) => {
-        useStore().setCreatedCourses(result.data)
-      }
-    })
-  }
-  // 获取用户学习的课程
-  get('/api/course/get-learning', {
-    onSuccess: (result) => {
-      useStore().setLearningCourses(result.data)
-    }
-  })
-  // 获取用户协助的课程
-  get('/api/course/get-assisting', {
-    onSuccess: (result) => {
-      useStore().setAssistingCourses(result.data)
-    }
-  })
-}
-
 // 登陆（使用异步的方式），参数为表单元素（不是 ref）
 const login = async (formEL) => {
   if (!formEL) {
@@ -91,8 +44,19 @@ const login = async (formEL) => {
       // 登陆成功
       onSuccess: (result) => {
         ElMessage.success(result.message)
-        initStoreAccount()
-        initStoreCourses()
+        // 获取用户登录的账户信息存入 store
+        get('/api/account/me', {
+          onJudge: (result) => {
+            return result.data != null
+          },
+          onSuccess: (result) => {
+            useStore().setAccount(result.data)
+            router.push('/main')
+          },
+          onFailure: () => {
+            ElMessage.warning('登陆成功但获取的用户信息为空，请刷新页面重试')
+          }
+        })
       },
       contentType: "application/x-www-form-urlencoded"
     })

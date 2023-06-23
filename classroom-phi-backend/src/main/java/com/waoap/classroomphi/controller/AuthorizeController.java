@@ -4,7 +4,6 @@ import static com.waoap.classroomphi.util.RegexpUtil.EMAIL_OR_TELEPHONE_REGEXP;
 import static com.waoap.classroomphi.util.RegexpUtil.PASSWORD_REGEXP;
 import static com.waoap.classroomphi.util.RegexpUtil.ROLE_REGEXP;
 
-import com.waoap.classroomphi.entity.account.RoleType;
 import com.waoap.classroomphi.entity.RestBean;
 import com.waoap.classroomphi.service.AuthorizeService;
 import jakarta.annotation.Nonnull;
@@ -42,7 +41,7 @@ public class AuthorizeController {
    *
    * @param emailOrTelephone 邮箱或手机号
    * @param password         密码
-   * @param roleType             身份
+   * @param role             身份
    * @param name             姓名
    * @param school           学校/机构
    * @param studentNo        学号
@@ -52,13 +51,13 @@ public class AuthorizeController {
   public RestBean<String> registerAccount(
       @Pattern(regexp = EMAIL_OR_TELEPHONE_REGEXP) @Length(max = 30) @RequestParam String emailOrTelephone,
       @Pattern(regexp = PASSWORD_REGEXP) @Length(min = 8, max = 20) @RequestParam String password,
-      @Pattern(regexp = ROLE_REGEXP) @Nonnull @RequestParam String roleType,
+      @Pattern(regexp = ROLE_REGEXP) @Nonnull @RequestParam String role,
       @Length(min = 2, max = 20) @RequestParam String name,
       @Length(min = 2, max = 50) @RequestParam String school,
       @Length(min = 5, max = 20) @RequestParam(required = false) String studentNo) {
     // 执行用户注册业务
     Integer status = authorizeService.registerAccount(emailOrTelephone, password,
-        RoleType.valueOf(roleType), name, school, studentNo);
+        role, name, school, studentNo);
     // 根据注册结果返回不同的消息
     switch (status) {
       case 0 -> {

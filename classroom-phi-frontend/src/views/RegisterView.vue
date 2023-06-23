@@ -19,7 +19,7 @@ const registerFormData = reactive({
   emailOrTelephone: '', // 邮箱/手机号
   password: '',
   password2: '',
-  roleType: 'TEACHER', // 默认为老师，注册页面打开时默认选则的是老师身份
+  role: '老师', // 默认为老师，注册页面打开时默认选则的是老师身份
   name: '',
   school: '',
   studentNo: null, // 默认为 null，此时在后端不会收到该字段
@@ -88,11 +88,11 @@ const rules = reactive({
 })
 
 // 用户切换选择的身份
-const changeRoleType = (roleType) => {
+const changeRole = (role) => {
   studentRoleRef.value.classList.toggle('active')
   teacherRoleRef.value.classList.toggle('active')
-  chooseStudent.value = (roleType === 'STUDENT')
-  registerFormData.roleType = roleType
+  chooseStudent.value = (role === '学生')
+  registerFormData.role = role
 }
 
 // 请求图形验证码
@@ -165,7 +165,7 @@ const register = async () => {
                 {
                   emailOrTelephone: registerFormData.emailOrTelephone,
                   password: registerFormData.password,
-                  roleType: registerFormData.roleType,
+                  role: registerFormData.role,
                   name: registerFormData.name,
                   school: registerFormData.school,
                   // 选择老师时，学号为 null
@@ -241,13 +241,13 @@ getFigureCode()
               <p class="font-bold font16">选择身份</p>
               <div class="role-box">
                 <div ref="teacherRoleRef"
-                     @click="changeRoleType('TEACHER')"
+                     @click="changeRole('老师')"
                      class="item flex-align active">
                   <img src="@/assets/img/teacher.svg" class="icon" alt="">
                   <span class="name">老师</span>
                 </div>
                 <div ref="studentRoleRef"
-                     @click="changeRoleType('STUDENT')"
+                     @click="changeRole('学生')"
                      class="item flex-align">
                   <img src="@/assets/img/student.svg" class="icon" alt="">
                   <span class="name">学生</span>

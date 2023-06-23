@@ -45,7 +45,7 @@ public class AuthorizeServiceImpl implements AuthorizeService {
     }
     return User.withUsername(key) // username 使用用户登录时传入的 key，否则会导致 remember-me 失效
         .password(authorizeAccount.getPassword()) // 传入的密码会自动使用我们提供的加密器加密
-        .roles(authorizeAccount.getRoleType().toString()).build();
+        .roles(authorizeAccount.getRole()).build();
   }
 
   /**
@@ -71,14 +71,14 @@ public class AuthorizeServiceImpl implements AuthorizeService {
    *
    * @param emailOrTelephone 邮箱或手机号
    * @param password         密码
-   * @param roleType         角色
+   * @param role             角色
    * @param name             姓名
    * @param school           学校
    * @param studentNo        学号
    * @return 注册操作状态，0 —— 注册成功，1000 —— 邮箱或手机号为空，1001 —— 邮箱或手机号已被注册，1002 —— 学号为空
    */
   @Override
-  public Integer registerAccount(String emailOrTelephone, String password, RoleType roleType,
+  public Integer registerAccount(String emailOrTelephone, String password, String role,
       String name, String school, String studentNo) {
     // 判断用户是否可以注册
     // 邮箱或手机号不可为空
@@ -90,7 +90,7 @@ public class AuthorizeServiceImpl implements AuthorizeService {
       return 1001;
     }
     // 指定学生身份时学号不可为空
-    else if (roleType == RoleType.STUDENT && studentNo == null) {
+    else if (role.equals(RoleType.STUDENT.name()) && studentNo == null) {
       return 1002;
     }
 
@@ -103,7 +103,7 @@ public class AuthorizeServiceImpl implements AuthorizeService {
     newAuthorizeAccount.setName(name);
     newAuthorizeAccount.setPassword(
         new BCryptPasswordEncoder().encode(password)); // 这里密码需要加密，再写入数据库
-    newAuthorizeAccount.setRoleType(roleType);
+    newAuthorizeAccount.setRole(role);
     newAuthorizeAccount.setSchool(school);
     newAuthorizeAccount.setAvatar(RandomImageUtil.getRandomAvatar());
     if (emailOrTelephone.matches(RegexpUtil.EMAIL_REGEXP)) {
@@ -115,11 +115,11 @@ public class AuthorizeServiceImpl implements AuthorizeService {
     }
 
     // 创建对应的老师/学生，写入数据库
-    if (roleType == RoleType.TEACHER) {
+    if (role.equals(RoleType.TEACHER.name())) {
       Teacher newTeacher = new Teacher();
       newTeacher.setAccountId(newAuthorizeAccount.getId());
       teacherMapper.createTeacher(newTeacher);
-    } else if (roleType == RoleType.STUDENT) {
+    } else if (role.equals(RoleType.STUDENT.name())) {
       Student newStudent = new Student();
       newStudent.setNo(studentNo);
       newStudent.setAccountId(newAuthorizeAccount.getId());

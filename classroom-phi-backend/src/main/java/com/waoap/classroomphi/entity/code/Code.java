@@ -10,7 +10,7 @@ public class Code {
 
   private Long id;
 
-  private Character[] code;
+  private String code;
 
   private Boolean disabled;
 }

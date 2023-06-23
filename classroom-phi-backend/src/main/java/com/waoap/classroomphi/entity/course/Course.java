@@ -32,17 +32,17 @@ public class Course {
   /**
    * 课程学年，格式如：2019-2020
    */
-  private Character[] academicYear;
+  private String academicYear;
 
   /**
    * 课程学期
    */
-  private AcademicTerm academicTerm;
+  private String academicTerm;
 
   /**
    * 课程教学模式
    */
-  private TeachingMode teachingMode;
+  private String teachingMode;
 
   /**
    * 课程学时
@@ -68,6 +68,11 @@ public class Course {
    * 是否允许学生退课
    */
   private Boolean allowDrop;
+
+  /**
+   * 课程人数
+   */
+  private Integer headcount;
 
   /**
    * 课程人数上限

@@ -3,20 +3,40 @@ import {computed, reactive, ref} from "vue";
 import {ArrowUp} from "@element-plus/icons-vue";
 import CourseCard from "@/components/CourseCard.vue";
 import {useStore} from "@/stores";
+import {get} from "@/net";
 
 const showTeacherArchiveCourseDialog = ref(false)
 const showStudentArchiveCourseDialog = ref(false)
 const showDeleteCourseDialog = ref(false)
 const showSortCourseDialog = ref(false)
 
+// 获取当前用户的相关课程
+const courses = ref({
+  createdCourses: [],
+  learningCourses: [],
+  assistingCourses: [],
+  pinnedCourses: [],
+})
+get('/api/course/get-all', {
+  onSuccess: (result) => {
+    courses.value.createdCourses = result.data.createdCourses
+    courses.value.learningCourses = result.data.learningCourses
+    courses.value.assistingCourses = result.data.assistingCourses
+    courses.value.pinnedCourses = result.data.pinnedCourses
+  },
+})
+
 // 用户是否为老师
-const isTeacher = useStore().getAccount().roleType === 'TEACHER'
+const isTeacher = useStore().getAccount().role === '老师'
 
 // 置顶课程板块
-const hasPinnedCourse = ref(useStore().getPinnedCourses().length > 0)
+const hasPinnedCourse = ref(courses.value.pinnedCourses.length > 0)
 const pinnedCourseClass = computed(() => {
   return 'header-common-border' + (hasPinnedCourse.value ? ' hasborder' : ' ')
 })
+
+// 小标头
+const showCourseType = ref('CREATED')
 
 // 归档管理
 const showArchivingCourseDialog = ref(false)
@@ -43,9 +63,9 @@ const academicYearOptions = [
   {value: '2022-2023', label: '2022-2023'}
 ]
 const academicTermOptions = [
-  {value: 'FULL_YEAR', label: '全年'},
-  {value: 'FIRST_TERM', label: '第一学期'},
-  {value: 'SECOND_TERM', label: '第二学期'},
+  {value: '全年', label: '全年'},
+  {value: '第一学期', label: '第一学期'},
+  {value: '第二学期', label: '第二学期'},
 ]
 const createCourseExtraFormData = ref({
   teachingMode: '',
@@ -165,10 +185,8 @@ const addCourse = async () => {
           <!--     置顶课程列表    -->
           <div class="class-box" style="max-height: 320px;">
             <!--   TODO component course card     -->
-            <template v-for="course in useStore().getPinnedCourses()">
-              <CourseCard :time="course.academicYear + ' ' + course.academicTerm"
-                          classname="course.teachingClass" code="XhFWkk3" title="course.name"
-                          mainteacher="扎根金融股">
+            <template v-for="course in courses.pinnedCourses">
+              <CourseCard :model-value="course">
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item>归档</el-dropdown-item>
@@ -180,41 +198,52 @@ const addCourse = async () => {
         </div>
         <!--    TODO 小标头    -->
         <div class="other-header flex-between">
-          <el-tabs tab-position="top" class="right">
-            <el-tab-pane v-if="isTeacher" label="我教的"/>
-            <el-tab-pane label="我学的"/>
-            <el-tab-pane label="我协助的"/>
+          <el-tabs tab-position="top" class="right"
+                   @tab-change="(name) => showCourseType = name">
+            <el-tab-pane v-if="isTeacher" label="我教的" name="CREATED"/>
+            <el-tab-pane label="我学的" name="LEARNING"/>
+            <el-tab-pane label="我协助的" name="ASSISTING"/>
           </el-tabs>
           <div class="left flex-between">
             <el-button @click="showArchivingCourseDialog = true" size="large">归档管理</el-button>
           </div>
         </div>
         <!--   TODO 课程列表    -->
-        <div class="class-chapter common-border">
-          <div class="class-handle">
-            <h3 class="left" style="cursor: pointer;"> 2022-2023 第二学期 </h3>
-            <div class="right"><!---->
-              <button type="button" class="el-button el-button--text el-button--medium"
-                      style="display: none;"><!----><i
-                  class="el-icon-caret-bottom"></i><span>展开 </span>
-              </button>
-              <button type="button" class="el-button el-button--text el-button--medium"><!----><i
-                  class="el-icon-caret-top"></i><span> 收起 </span>
-              </button>
-            </div>
-          </div>
           <div class="class-box">
-            <!--      TODO      -->
-            <CourseCard time="2021年" classname="121230204" code="XhFWkk3" title="软件工程II"
-                        mainteacher="扎根金融股">
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item>归档</el-dropdown-item>
-                </el-dropdown-menu>
+            <template v-if="showCourseType === 'CREATED'">
+              <template v-for="course in courses.createdCourses">
+                <CourseCard :model-value="course">
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item>归档</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </CourseCard>
               </template>
-            </CourseCard>
+            </template>
+            <template v-else-if="showCourseType === 'LEARNING'">
+              <template v-for="course in courses.learningCourses">
+                <CourseCard :model-value="course">
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item>归档</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </CourseCard>
+              </template>
+            </template>
+            <template v-else-if="showCourseType === 'ASSISTING'">
+              <template v-for="course in courses.assistingCourses">
+                <CourseCard :model-value="course">
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item>归档</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </CourseCard>
+              </template>
+            </template>
           </div>
-        </div>
       </div>
       <!--   归档管理弹窗   -->
       <el-dialog v-model="showArchivingCourseDialog" class="component-teacher_file custom-dialog"
@@ -271,9 +300,9 @@ const addCourse = async () => {
               <div class="TeachingRadio">
                 <span>授课模式</span>
                 <el-radio-group v-model="createCourseExtraFormData.teachingMode">
-                  <el-radio label="线上" model-value="ONLINE">线上</el-radio>
-                  <el-radio label="线下" model-value="OFF_LINE">线下</el-radio>
-                  <el-radio label="混合" model-value="MIXED">混合</el-radio>
+                  <el-radio label="线上" model-value="线上">线上</el-radio>
+                  <el-radio label="线下" model-value="线下">线下</el-radio>
+                  <el-radio label="混合" model-value="混合">混合</el-radio>
                 </el-radio-group>
               </div>
               <div class="TeachingTimer">

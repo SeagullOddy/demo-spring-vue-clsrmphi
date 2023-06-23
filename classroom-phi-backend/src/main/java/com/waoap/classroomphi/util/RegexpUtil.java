@@ -15,5 +15,5 @@ public class RegexpUtil {
 
   public static final String PASSWORD_REGEXP = "^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[ -/:-@\\[-`{-~]).*$";
 
-  public static final String ROLE_REGEXP = "^(STUDENT|TEACHER)$";
+  public static final String ROLE_REGEXP = "^(老师|学生)$";
 }
